@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -21,6 +21,11 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // الحصول على المسار السابق من الـ state، أو التوجيه إلى صفحة افتراضية
+  // لقد قمت بتعديل المسار الافتراضي ليكون /admin/dashboard
+  const from = location.state?.from || '/admin/'; 
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -35,10 +40,10 @@ const Login = () => {
 
       // حفظ التوكن في التخزين المحلي (Local Storage)
       const token = response.data.token;
-      localStorage.setItem('authToken', token);
-
-      // إعادة توجيه المستخدم إلى الصفحة الرئيسية
-      navigate('/');
+      // مهم: استخدام مفتاح "token" ليتوافق مع كود Products.jsx
+localStorage.setItem("token", response.data.token);
+      // إعادة توجيه المستخدم إلى المسار الذي كان فيه
+      navigate(from, { replace: true });
       
     } catch (err) {
       if (err.response) {
@@ -67,7 +72,7 @@ const Login = () => {
       >
         <Paper elevation={6} sx={{ p: 4, borderRadius: 2 }}>
           <Typography component="h1" variant="h5" align="center" gutterBottom>
-            تسجيل الدخول
+            Sign in
           </Typography>
           <Box component="form" onSubmit={handleLogin} noValidate sx={{ mt: 1 }}>
             <TextField
