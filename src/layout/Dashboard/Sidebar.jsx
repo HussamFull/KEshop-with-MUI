@@ -69,6 +69,8 @@ const StyledDrawer = styled(Drawer, { shouldForwardProp: (prop) => prop !== 'ope
 const menuItems = [
   { text: "Dashboard", icon: <DashboardIcon />, path: "/admin" },
   { text: "Categories", icon: <CategoryIcon />, path: "/admin/categories" },
+    { text: "Brands", icon: <CategoryIcon />, path: "/admin/Brands" },
+
   { text: "Products", icon: <ShoppingBagIcon />, path: "/admin/products" },
   { text: "Users", icon: <PeopleIcon />, path: "/admin/users" },
 ];

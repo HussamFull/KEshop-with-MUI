@@ -1,6 +1,6 @@
-// src/pages/admin/Categories.jsx
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // تأكد من استيراد useNavigate
+import { useNavigate } from "react-router-dom";
+import axios from 'axios';
 
 import {
   Typography,
@@ -21,6 +21,8 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Switch, // إضافة Switch
+  FormControlLabel, // لإضافة تسمية للـ Switch
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
@@ -77,6 +79,43 @@ export default function Categories() {
   useEffect(() => {
     fetchCategories();
   }, []);
+
+  // دالة لتبديل حالة الفئة (مثلاً تفعيل/تعطيل)
+   const handleToggleStatus = async (id, currentStatus) => {
+    try {
+      setLoading(true);
+      
+      const toggleUrl = `${API_URL}/ToggleStatus/${id}`;
+      
+      const response = await axios.patch(toggleUrl, null, {
+        headers: {
+          'Authorization': `Bearer ${TOKEN}`,
+        },
+      });
+
+      if (response.status === 200) { // التحقق من حالة الاستجابة باستخدام Axios
+        // تحديث حالة الفئة في قائمة الفئات
+        setCategories(prevCategories =>
+          prevCategories.map(category =>
+            category.id === id ? { ...category, isActive: !currentStatus } : category
+          )
+        );
+      }
+    } catch (error) {
+      if (error.response) {
+        // إذا كان هناك استجابة من الخادم (مثل خطأ 404)
+        console.error("Failed to toggle status:", error.response.statusText);
+      } else if (error.request) {
+        // إذا لم يكن هناك استجابة من الخادم (مثل مشكلة في الشبكة)
+        console.error("Error toggling status: No response from server.");
+      } else {
+        // أي خطأ آخر
+        console.error("Error toggling status:", error.message);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // دالة لإضافة فئة جديدة
   const handleAddCategory = async () => {
@@ -234,25 +273,39 @@ export default function Categories() {
               <TableRow>
                 <TableCell>ID</TableCell>
                 <TableCell>Category Name</TableCell>
+                <TableCell>Status</TableCell> {/* عمود جديد للحالة */}
+
                 <TableCell align="right">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredCategories.map((category) => (
-                <TableRow key={category.id}>
-                  <TableCell>{category.id}</TableCell>
-                  <TableCell>{category.name}</TableCell>
-                  <TableCell align="right">
-                    <IconButton color="primary" onClick={() => handleClickOpenEditDialog(category)}>
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton color="error" onClick={() => handleClickOpenDeleteDialog(category)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
+  {filteredCategories.map((category) => (
+    <TableRow key={category.id}>
+      <TableCell>{category.id}</TableCell><TableCell>{category.name}</TableCell>
+      <TableCell>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={category.isActive}
+              onChange={() => handleToggleStatus(category.id, category.isActive)}
+              name="isActive"
+              color="primary"
+            />
+          }
+          label={category.isActive ? "Active" : "Inactive"}
+        />
+      </TableCell><TableCell align="right">
+        <IconButton color="primary" onClick={() => handleClickOpenEditDialog(category)}>
+          <EditIcon />
+        </IconButton>
+        <IconButton color="error" onClick={() => handleClickOpenDeleteDialog(category)}>
+          <DeleteIcon />
+        </IconButton>
+      </TableCell>
+    </TableRow>
+  ))}
+</TableBody>
+
           </Table>
         </TableContainer>
       )}

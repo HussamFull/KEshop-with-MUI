@@ -75,7 +75,7 @@ const Login = () => {
               required
               fullWidth
               id="email"
-              label="البريد الإلكتروني"
+              label="Your Email"
               name="email"
               autoComplete="email"
               autoFocus
@@ -88,7 +88,7 @@ const Login = () => {
               required
               fullWidth
               name="password"
-              label="كلمة المرور"
+              label="password"
               type={showPassword ? 'text' : 'password'}
               id="password"
               autoComplete="current-password"
