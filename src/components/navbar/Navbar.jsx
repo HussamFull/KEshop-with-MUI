@@ -15,6 +15,14 @@ import AdbIcon from '@mui/icons-material/Adb';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 
+// الألوان الجديدة من لوحة الألوان
+const colors = {
+  forest: '#002623',
+  goldenWheat: '#988561',
+  deepUmber: '#260f14',
+  white: '#ffffff',
+};
+
 const pages = [
   { name: 'Home', path: '/' },
   { name: 'Categories', path: '/categories' },
@@ -52,10 +60,10 @@ export default function Navbar() {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ bgcolor: colors.forest }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+          <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, color: colors.goldenWheat }} />
           <Typography
             variant="h6"
             noWrap
@@ -67,7 +75,7 @@ export default function Navbar() {
               fontFamily: 'monospace',
               fontWeight: 700,
               letterSpacing: '.3rem',
-              color: 'inherit',
+              color: colors.goldenWheat,
               textDecoration: 'none',
             }}
           >
@@ -83,7 +91,7 @@ export default function Navbar() {
               onClick={handleOpenNavMenu}
               color="inherit"
             >
-              <MenuIcon />
+              <MenuIcon sx={{ color: colors.goldenWheat }} />
             </IconButton>
             <Menu
               id="menu-appbar"
@@ -113,7 +121,7 @@ export default function Navbar() {
               ))}
             </Menu>
           </Box>
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
+          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1, color: colors.goldenWheat }} />
           <Typography
             variant="h5"
             noWrap
@@ -126,25 +134,24 @@ export default function Navbar() {
               fontFamily: 'monospace',
               fontWeight: 700,
               letterSpacing: '.3rem',
-              color: 'inherit',
+              color: colors.goldenWheat,
               textDecoration: 'none',
             }}
           >
             LOGO
           </Typography>
-          {/* التغييرات الرئيسية هنا */}
           <Box
             sx={{
               flexGrow: 1,
               display: { xs: 'none', md: 'flex' },
-              justifyContent: 'center', // توسيط العناصر في المنتصف
+              justifyContent: 'center',
             }}
           >
             {pages.map((page) => (
               <Button
                 key={page.name}
                 onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
+                sx={{ my: 2, color: colors.goldenWheat, display: 'block' }}
                 component={Link}
                 to={page.path}
               >
