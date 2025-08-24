@@ -1,26 +1,41 @@
-import React, { useState } from 'react';
-import { TextField, Button, Box, Typography, Container, Paper, Snackbar, Alert,CircularProgress  } from '@mui/material';
-import axios from 'axios';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useNavigate } from 'react-router-dom';
-import syrianVisualIdentity from './pattern.svg';
-import { useForm } from 'react-hook-form';
+import React, { useState } from "react";
+import {
+  TextField,
+  Button,
+  Box,
+  Typography,
+  Container,
+  Paper,
+  Snackbar,
+  Alert,
+  CircularProgress,
+} from "@mui/material";
+import axios from "axios";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { useNavigate } from "react-router-dom";
+import syrianVisualIdentity from "./pattern.svg";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import registerSchema from "../../../validations/RegisterSchema";
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+
 
 
 // الألوان الجديدة من لوحة الألوان
 const colors = {
-  forest: '#002623',
-  goldenWheat: '#988561',
-  charcoal: '#161616',
-  deepUmber: '#260f14',
-  white: '#ffffff',
-  grey: '#d0d0d0', 
+  forest: "#002623",
+  goldenWheat: "#988561",
+  charcoal: "#161616",
+  deepUmber: "#260f14",
+  white: "#ffffff",
+  grey: "#d0d0d0",
 };
 
-
-
 const theme = createTheme({
-  direction: 'rtl',
+  direction: "rtl",
   palette: {
     primary: {
       main: colors.deepUmber, // لون الزر الرئيسي
@@ -29,39 +44,65 @@ const theme = createTheme({
       main: colors.goldenWheat,
     },
     background: {
-      default: colors.white, 
+      default: colors.white,
     },
   },
 });
 
 export default function Register() {
-  // استخدام React Hook Form لإدارة النموذج   
 
-  const {register, handleSubmit, formState: { errors }} = useForm();
+  // yup 
+
+
+
+
+
+
+
+  // استخدام React Hook Form لإدارة النموذج
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver:yupResolver(registerSchema)
+  });
   const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false); // حالة جديدة
 
-  const onSubmit = async data => {
+  // show Password 
+   const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const onSubmit = async (data) => {
     console.log(data);
     try {
       setIsLoading(true);
       // إرسال بيانات التسجيل إلى الخادم
       // const response = await axios.post('https://localhost:7227/api/Identity/Account/register', data);
-       const response = await axios.post('http://mytest1.runasp.net/api/Identity/Account/Register', data);
-       console.log('Registration successful:', response.data);
+      const response = await axios.post(
+        "http://mytest1.runasp.net/api/Identity/Account/Register",
+        data
+      );
+      console.log("Registration successful:", response.data);
       // حفظ التوكن في التخزين المحلي (Local Storage)
       // localStorage.setItem('authToken', response.data.token);
       // إعادة توجيه المستخدم إلى صفحة تسجيل الدخول أو الصفحة الرئيسية
       // navigate('/login');
     } catch (error) {
-      console.error('Registration failed:', error.response ? error.response.data : error.message);
+      console.error(
+        "Registration failed:",
+        error.response ? error.response.data : error.message
+      );
       // عرض رسالة خطأ للمستخدم
-    }finally {
+    } finally {
       setIsLoading(false);
     }
-
   };
 
-{/*
+  {
+    /*
   const [formData, setFormData] = useState({
     email: '',
     userName: '',
@@ -69,13 +110,15 @@ export default function Register() {
     phoneNumber: '',
     password: '',
   });
-*/}
+*/
+  }
   //const [openSnackbar, setOpenSnackbar] = useState(false);
   //const [snackbarMessage, setSnackbarMessage] = useState('');
   //const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   //const navigate = useNavigate();
 
-  {/*  
+  {
+    /*  
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -113,66 +156,95 @@ export default function Register() {
       setOpenSnackbar(true);
     }
   };
-*/}
+*/
+  }
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="lg" sx={{ mt: 5, mb: 5 }}>
-        <Paper elevation={6} sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, overflow: 'hidden', borderRadius: 2 }}>
-          
+        <Paper
+          elevation={6}
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            overflow: "hidden",
+            borderRadius: 2,
+          }}
+        >
           {/* القسم الأيسر: صورة الهوية البصرية */}
           <Box
             sx={{
-              width: { xs: '100%', md: '50%' },
+              width: { xs: "100%", md: "50%" },
               p: 4,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
               bgcolor: colors.forest, // استخدام لون Forest للخلفية
             }}
           >
             <Box
               component="img"
               sx={{
-                width: '100%',
+                width: "100%",
                 maxHeight: { xs: 200, md: 500 },
-                objectFit: 'cover',
+                objectFit: "cover",
                 borderRadius: 2,
               }}
               alt="Syrian Revolution Visual Identity"
               src={syrianVisualIdentity}
             />
           </Box>
-          
+
           {/* القسم الأيمن: نموذج التسجيل */}
           <Box
             sx={{
-              width: { xs: '100%', md: '50%' },
+              width: { xs: "100%", md: "50%" },
               p: { xs: 4, md: 8 },
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
               bgcolor: colors.white,
             }}
           >
-            <Typography component="h1" variant="h4" gutterBottom sx={{ textAlign: 'center', color: colors.deepUmber, fontWeight: 'bold' }}>
+            <Typography
+              component="h1"
+              variant="h4"
+              gutterBottom
+              sx={{
+                textAlign: "center",
+                color: colors.deepUmber,
+                fontWeight: "bold",
+              }}
+            >
               Create an Account
             </Typography>
-            <Typography variant="body2" sx={{ textAlign: 'center', mb: 3, color: colors.charcoal }}>
+            <Typography
+              variant="body2"
+              sx={{ textAlign: "center", mb: 3, color: colors.charcoal }}
+            >
               Join our community and enjoy a world-class shopping experience.
             </Typography>
-            <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }}>
+            <Box
+              component="form"
+              onSubmit={handleSubmit(onSubmit)}
+              noValidate
+              sx={{ mt: 1 }}
+            >
               <TextField
+              
                 margin="normal"
                 required
                 fullWidth
                 id="fullName"
-                label="Full Name"
-                {...register('fullName')}
+               
+                {...register("fullName")}
+                 label="Full Name"
+                 error={errors.fullName}
+                 helperText={errors.fullName?.message}
                 //name="fullName"
                 autoComplete="fullName"
                 autoFocus
-               // value={formData.fullName}
-               // onChange={handleChange}
+                // value={formData.fullName}
+                // onChange={handleChange}
               />
               <TextField
                 margin="normal"
@@ -180,11 +252,13 @@ export default function Register() {
                 fullWidth
                 id="userName"
                 label="Username"
-                {...register('userName')}
+                {...register("userName")}
+                 error={errors.userName}
+                 helperText={errors.userName?.message}
                 //name="userName"
                 autoComplete="userName"
-               // value={formData.userName}
-              //  onChange={handleChange}
+                // value={formData.userName}
+                //  onChange={handleChange}
               />
               <TextField
                 margin="normal"
@@ -192,11 +266,13 @@ export default function Register() {
                 fullWidth
                 id="email"
                 label="Email Address"
-                {...register('email')}
+                {...register("email")}
+                error={errors.email}
+                 helperText={errors.email?.message}
                 //name="email"
                 autoComplete="email"
-               // value={formData.email}
-               // onChange={handleChange}
+                // value={formData.email}
+                // onChange={handleChange}
               />
               <TextField
                 margin="normal"
@@ -204,24 +280,38 @@ export default function Register() {
                 fullWidth
                 id="phoneNumber"
                 label="Phone Number"
-                {...register('phoneNumber')}
+                {...register("phoneNumber")}
+                 error={errors.phoneNumber}
+                 helperText={errors.phoneNumber?.message}
                 //name="phoneNumber"
                 autoComplete="tel"
                 //value={formData.phoneNumber}
-               // onChange={handleChange}
+                // onChange={handleChange}
               />
-              <TextField
+               <TextField
                 margin="normal"
                 required
                 fullWidth
-                {...register('password')}
-                //name="password"
+                {...register('password', { required: 'Password is required' })}
                 label="Password"
-                type="password"
+                type={showPassword ? 'text' : 'password'} // 👈 تغيير نوع الحقل ديناميكياً
                 id="password"
                 autoComplete="new-password"
-               // value={formData.password}
-               // onChange={handleChange}
+                error={errors.password}
+                helperText={errors.password?.message}
+                InputProps={{ // 👈 إضافة أيقونة الرؤية
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
               <Button
                 type="submit"
@@ -232,12 +322,17 @@ export default function Register() {
                   mt: 3,
                   mb: 2,
                   bgcolor: colors.deepUmber, // استخدام لون Deep Umber للزر
-                  '&:hover': { bgcolor: '#4a151e' }
+                  "&:hover": { bgcolor: "#4a151e" },
                 }}
-              > {isLoading ? (
-                  <CircularProgress size={24} sx={{ color: colors.goldenWheat }} /> // 👈 شاشة التحميل
+              >
+                {" "}
+                {isLoading ? (
+                  <CircularProgress
+                    size={24}
+                    sx={{ color: colors.goldenWheat }}
+                  /> // 👈 شاشة التحميل
                 ) : (
-                  'Register'
+                  "Register"
                 )}
               </Button>
             </Box>
@@ -252,5 +347,4 @@ export default function Register() {
       </Snackbar> */}
     </ThemeProvider>
   );
-};
-
+}
