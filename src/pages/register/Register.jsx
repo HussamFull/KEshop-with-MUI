@@ -13,7 +13,7 @@ import {
 import axios from "axios";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
-import syrianVisualIdentity from "./pattern.svg";
+import syrianVisualIdentity from "./pattern.svg"; // ⬅️ هذا المسار صحيح
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import registerSchema from "../../../validations/RegisterSchema";

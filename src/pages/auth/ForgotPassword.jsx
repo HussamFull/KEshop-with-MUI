@@ -9,21 +9,15 @@ import {
   Snackbar,
   Alert,
   CircularProgress,
-   Link, 
+  Link,
 } from "@mui/material";
 import axios from "axios";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import {  useNavigate } from "react-router-dom";
-import syrianVisualIdentity from "../register/pattern.svg"; // ⬅️ المسار الصحيح
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import loginSchema from "../../../validations/LoginSchema";
-import InputAdornment from '@mui/material/InputAdornment';
-import IconButton from '@mui/material/IconButton';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-
-
+import * as yup from "yup";
+import { useNavigate } from "react-router-dom";
+import syrianVisualIdentity from "../register/pattern.svg"; // ⬅️ المسار الصحيح
 
 // الألوان الجديدة من لوحة الألوان
 const colors = {
@@ -39,7 +33,7 @@ const theme = createTheme({
   direction: "rtl",
   palette: {
     primary: {
-      main: colors.deepUmber, // لون الزر الرئيسي
+      main: colors.deepUmber,
     },
     secondary: {
       main: colors.goldenWheat,
@@ -50,37 +44,63 @@ const theme = createTheme({
   },
 });
 
-export default function Login() {
-    const navigate = useNavigate(); // تم إضافة useNavigate
+// تعريف مخطط التحقق (Validation Schema) باستخدام Yup
+const forgotPasswordSchema = yup.object().shape({
+  email: yup
+    .string()
+    .email("البريد الإلكتروني غير صالح")
+    .required("البريد الإلكتروني مطلوب"),
+});
 
+export default function ForgotPassword() {
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(loginSchema),
+    resolver: yupResolver(forgotPasswordSchema),
   });
-  const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
 
-  const handleClickShowPassword = () => {
-    setShowPassword(!showPassword);
+  const [isLoading, setIsLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
   };
 
   const onSubmit = async (data) => {
-    console.log(data);
     try {
       setIsLoading(true);
       const response = await axios.post(
-        "http://mytest1.runasp.net/api/Identity/Account/Login",
+        "http://mytest1.runasp.net/api/Identity/Account/forgot-password",
         data
       );
-      console.log("Login successful:", response.data);
+      console.log("Forgot password request successful:", response.data);
+      setSnackbar({
+        open: true,
+        message:
+          "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني بنجاح.",
+        severity: "success",
+      });
+      // يمكنك إعادة توجيه المستخدم بعد نجاح العملية
+      // navigate('/login');
     } catch (error) {
       console.error(
-        "Login failed:",
+        "Forgot password request failed:",
         error.response ? error.response.data : error.message
       );
+      setSnackbar({
+        open: true,
+        message:
+          error.response?.data?.message ||
+          "حدث خطأ أثناء إرسال الطلب. يرجى المحاولة مرة أخرى.",
+        severity: "error",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -98,7 +118,6 @@ export default function Login() {
             borderRadius: 2,
           }}
         >
-          {/* القسم الأيسر: صورة الهوية البصرية */}
           <Box
             sx={{
               width: { xs: "100%", md: "50%" },
@@ -122,21 +141,17 @@ export default function Login() {
               src={syrianVisualIdentity}
             />
           </Box>
-
-          {/* القسم الأيمن: نموذج تسجيل الدخول */}
           <Box
             sx={{
               width: { xs: "100%", md: "50%" },
-              // التعديل الرئيسي هنا:
-              py: { xs: 4, md: 8 }, // بادينغ عمودي
-              px: { xs: 4, sm: 6, md: 8 }, // بادينغ أفقي للشاشات الصغيرة أكبر (مهم للموبايل)
+              py: { xs: 4, md: 8 },
+              px: { xs: 4, sm: 6, md: 8 },
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
               bgcolor: colors.white,
             }}
           >
-            
             <Typography
               component="h1"
               variant="h4"
@@ -147,13 +162,13 @@ export default function Login() {
                 fontWeight: "bold",
               }}
             >
-              Account Login
+              نسيت كلمة المرور
             </Typography>
             <Typography
               variant="body2"
               sx={{ textAlign: "center", mb: 3, color: colors.charcoal }}
             >
-              Join our community and enjoy a world-class shopping experience.
+              أدخل بريدك الإلكتروني لإعادة تعيين كلمة المرور.
             </Typography>
             <Box
               component="form"
@@ -166,59 +181,12 @@ export default function Login() {
                 required
                 fullWidth
                 id="email"
-                label="Email Address"
+                label="البريد الإلكتروني"
                 {...register("email")}
                 error={errors.email}
                 helperText={errors.email?.message}
                 autoComplete="email"
               />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                {...register('password', { required: 'Password is required' })}
-                label="Password"
-                type={showPassword ? 'text' : 'password'}
-                id="password"
-                autoComplete="current-password"
-                error={errors.password}
-                helperText={errors.password?.message}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        edge="end"
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-                 {/* إضافة رابط "نسيت كلمة المرور" */}
-              <Box
-                sx={{
-                  textAlign: "right", // تم تعديل المحاذاة إلى اليمين
-                  mt: 1, // مسافة علوية
-                  mb: 2, // مسافة سفلية
-                }}
-              >
-                <Link
-                  href="/ForgotPassword" // تأكد من أن هذا المسار صحيح
-                  variant="body2"
-                  sx={{
-                    color: colors.deepUmber, // استخدم لون ثابت
-                    textDecoration: "none", // إزالة الخط تحت الرابط
-                    "&:hover": {
-                      textDecoration: "underline", // إضافة خط عند المرور بالماوس
-                    },
-                  }}
-                >
-                forgot your password ? 
-                  </Link>
-              </Box>
               <Button
                 type="submit"
                 fullWidth
@@ -231,20 +199,42 @@ export default function Login() {
                   "&:hover": { bgcolor: "#4a151e" },
                 }}
               >
-                {" "}
                 {isLoading ? (
                   <CircularProgress
                     size={24}
                     sx={{ color: colors.goldenWheat }}
                   />
                 ) : (
-                  "Login"
+                  "إرسال"
                 )}
               </Button>
+            </Box>
+            <Box sx={{ textAlign: "center", mt: 2 }}>
+              <Link
+                href="/login"
+                variant="body2"
+                sx={{ color: colors.deepUmber, fontWeight: "bold" }}
+              >
+                العودة لتسجيل الدخول
+              </Link>
             </Box>
           </Box>
         </Paper>
       </Container>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </ThemeProvider>
   );
 }

@@ -6,6 +6,7 @@ import Home from './pages/Home/Home'; // Assuming you have a Home component
 import Register from './pages/register/Register';
 import Login from './pages/login/Login';
 import Cart from './pages/cart/Cart';
+import ForgotPassword from './pages/auth/ForgotPassword';
 
 import NotFound from './pages/NotFound';
 
@@ -14,6 +15,7 @@ import Categories from "./pages/admin/Categories";
 import Brands from "./pages/admin/Brands";
 import Products from "./pages/admin/Products";
 import Users from "./pages/admin/Users";
+
 
 
 
@@ -33,6 +35,10 @@ const router = createBrowserRouter([
              {
                 path: "/Login",
                 element: <Login />,
+            },
+            {
+                path: "/ForgotPassword",
+                element: <ForgotPassword />,
             },
             {
                 path: "/Cart",
