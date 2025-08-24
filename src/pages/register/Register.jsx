@@ -24,6 +24,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 
 
+
 // الألوان الجديدة من لوحة الألوان
 const colors = {
   forest: "#002623",
@@ -68,6 +69,7 @@ export default function Register() {
     resolver:yupResolver(registerSchema)
   });
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false); // حالة جديدة
 
   // show Password 
@@ -88,8 +90,12 @@ export default function Register() {
       console.log("Registration successful:", response.data);
       // حفظ التوكن في التخزين المحلي (Local Storage)
       // localStorage.setItem('authToken', response.data.token);
+
       // إعادة توجيه المستخدم إلى صفحة تسجيل الدخول أو الصفحة الرئيسية
-      // navigate('/login');
+      if(response.status == 200){
+         navigate('/login');
+      }
+      //
     } catch (error) {
       console.error(
         "Registration failed:",
@@ -174,18 +180,20 @@ export default function Register() {
           <Box
             sx={{
               width: { xs: "100%", md: "50%" },
-              p: 4,
+              p: { xs: 2, md: 4 }, // تعديل: تقليل المسافة البادئة على الشاشات الصغيرة
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               bgcolor: colors.forest, // استخدام لون Forest للخلفية
+                  // إضافة: إخفاء الصورة على الشاشات الصغيرة جدًا لتحسين المساحة
+              display: { xs: "none", sm: "flex" }, 
             }}
           >
             <Box
               component="img"
               sx={{
                 width: "100%",
-                maxHeight: { xs: 200, md: 500 },
+                maxHeight: { xs: "auto", md: 500 },
                 objectFit: "cover",
                 borderRadius: 2,
               }}
@@ -198,7 +206,9 @@ export default function Register() {
           <Box
             sx={{
               width: { xs: "100%", md: "50%" },
-              p: { xs: 4, md: 8 },
+             // التعديل الرئيسي هنا:
+              py: { xs: 4, md: 8 }, // بادينغ عمودي
+              px: { xs: 2, sm: 4, md: 8 }, // بادينغ أفقي مختلف للشاشات المختلفة
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
