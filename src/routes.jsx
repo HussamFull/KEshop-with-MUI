@@ -15,6 +15,7 @@ import Categories from "./pages/admin/Categories";
 import Brands from "./pages/admin/Brands";
 import Products from "./pages/admin/Products";
 import Users from "./pages/admin/Users";
+import ResetPassword from './pages/auth/ResetPassword';
 
 
 
@@ -40,6 +41,15 @@ const router = createBrowserRouter([
                 path: "/ForgotPassword",
                 element: <ForgotPassword />,
             },
+
+             {
+                path: "/ResetPassword",
+                element: <ResetPassword />,
+            },
+
+
+
+            
             {
                 path: "/Cart",
                 element: <Cart />,

@@ -18,8 +18,11 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
 import syrianVisualIdentity from "../register/pattern.svg"; // ⬅️ المسار الصحيح
-import forgotPasswordSchema from "../../../validations/ForgotPasswordSchema";
-
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import RestPasswordSchema from "../../../validations/RestPasswordSchema";
 
 
 
@@ -49,23 +52,29 @@ const theme = createTheme({
   },
 });
 
+// تعريف مخطط التحقق باستخدام Yup
 
-export default function ForgotPassword() {
+export default function ResetPassword() {
   const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(forgotPasswordSchema),
+    resolver: yupResolver(RestPasswordSchema),
   });
 
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
     severity: "success",
   });
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
 
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false });
@@ -74,29 +83,34 @@ export default function ForgotPassword() {
   const onSubmit = async (data) => {
     try {
       setIsLoading(true);
-      const response = await axios.post(
-        "http://mytest1.runasp.net/api/Identity/Account/forgot-password",
-        data
+      const payload = {
+        newPassword: data.newPassword,
+        code: data.code,
+        email: data.email,
+      };
+
+      const response = await axios.patch(
+        "http://mytest1.runasp.net/api/Identity/Account/reset-password",
+        payload
       );
-      console.log("Forgot password request successful:", response.data);
+      console.log("Password reset successful:", response.data);
       setSnackbar({
         open: true,
-        message:
-          "A password reset link has been successfully sent to your email.",
+        message: "Your password has been reset successfully!",
         severity: "success",
       });
-      // يمكنك إعادة توجيه المستخدم بعد نجاح العملية
-       navigate('/ResetPassword');
+      // إعادة توجيه المستخدم إلى صفحة تسجيل الدخول بعد النجاح
+      navigate("/login");
     } catch (error) {
       console.error(
-        "Forgot password request failed:",
+        "Password reset failed:",
         error.response ? error.response.data : error.message
       );
       setSnackbar({
         open: true,
         message:
           error.response?.data?.message ||
-          "An error occurred while submitting your request. Please try again.",
+          "An error occurred. Please check your information and try again.",
         severity: "error",
       });
     } finally {
@@ -160,13 +174,13 @@ export default function ForgotPassword() {
                 fontWeight: "bold",
               }}
             >
-Forgot your password?
+              Reset your password
             </Typography>
             <Typography
               variant="body2"
               sx={{ textAlign: "center", mb: 3, color: colors.charcoal }}
             >
-Enter your email to reset your password.
+              Enter the verification code and your new password.
             </Typography>
             <Box
               component="form"
@@ -179,12 +193,62 @@ Enter your email to reset your password.
                 required
                 fullWidth
                 id="email"
-                label="Your Email "
+                label="Your Email"
                 {...register("email")}
-                error={errors.email}
+                error={!!errors.email}
                 helperText={errors.email?.message}
                 autoComplete="email"
               />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="code"
+                label="Verification Code"
+                {...register("code")}
+                error={!!errors.code}
+                helperText={errors.code?.message}
+                autoComplete="off"
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                {...register("newPassword")}
+                label="New Password"
+                type={showPassword ? "text" : "password"}
+                id="newPassword"
+                autoComplete="new-password"
+                error={!!errors.newPassword}
+                helperText={errors.newPassword?.message}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              {/*
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                {...register("confirmPassword")}
+                label="Confirm New Password"
+                type={showPassword ? "text" : "password"}
+                id="confirmPassword"
+                autoComplete="new-password"
+                error={!!errors.confirmPassword}
+                helperText={errors.confirmPassword?.message}
+              />
+              */}
               <Button
                 type="submit"
                 fullWidth
@@ -198,12 +262,9 @@ Enter your email to reset your password.
                 }}
               >
                 {isLoading ? (
-                  <CircularProgress
-                    size={24}
-                    sx={{ color: colors.goldenWheat }}
-                  />
+                  <CircularProgress size={24} sx={{ color: colors.goldenWheat }} />
                 ) : (
-                  "إرسال"
+                  "Reset Password"
                 )}
               </Button>
             </Box>
@@ -213,7 +274,7 @@ Enter your email to reset your password.
                 variant="body2"
                 sx={{ color: colors.deepUmber, fontWeight: "bold" }}
               >
-Back to login
+                Back to login
               </Link>
             </Box>
           </Box>
