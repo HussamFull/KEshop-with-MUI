@@ -118,10 +118,17 @@ export default function Register() {
   });
 */
   }
-  //const [openSnackbar, setOpenSnackbar] = useState(false);
-  //const [snackbarMessage, setSnackbarMessage] = useState('');
-  //const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   //const navigate = useNavigate();
+
+    const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSnackbar(false);
+  };
 
   {
     /*  
@@ -130,12 +137,7 @@ export default function Register() {
   };
 
 
-  const handleCloseSnackbar = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setOpenSnackbar(false);
-  };
+
 {/* 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -349,12 +351,12 @@ export default function Register() {
           </Box>
         </Paper>
       </Container>
-      {/*   
+       
       <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
         <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
           {snackbarMessage}
         </Alert>
-      </Snackbar> */}
+      </Snackbar> 
     </ThemeProvider>
   );
 }

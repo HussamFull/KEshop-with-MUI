@@ -14,7 +14,17 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { useTheme } from "@mui/material/styles";
+import { useTheme, createTheme, ThemeProvider } from "@mui/material/styles";
+
+// الألوان الجديدة من لوحة الألوان التي استخدمتها في صفحة الريجستر
+const colors = {
+  forest: "#002623",
+  goldenWheat: "#988561",
+  charcoal: "#161616",
+  deepUmber: "#260f14",
+  white: "#ffffff",
+  grey: "#d0d0d0",
+};
 
 // بيانات الرسم البياني
 const salesData = [
@@ -27,7 +37,7 @@ const salesData = [
 ];
 
 // بطاقة إحصائية
-function StatCard({ title, value, icon, color }) {
+function StatCard({ title, value, icon, cardColor, iconColor }) {
   const theme = useTheme();
   return (
     <Card
@@ -36,8 +46,8 @@ function StatCard({ title, value, icon, color }) {
         alignItems: "center",
         justifyContent: "space-between",
         p: 3,
-        bgcolor: color,
-        color: "#fff",
+        bgcolor: cardColor, // استخدام لون البطاقة الممرر
+        color: colors.white, // لون النص أبيض
         transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
         "&:hover": {
           transform: "translateY(-5px)",
@@ -53,16 +63,17 @@ function StatCard({ title, value, icon, color }) {
           {value}
         </Typography>
       </Box>
-      <Box sx={{ color: "rgba(255, 255, 255, 0.6)", fontSize: 48 }}>{icon}</Box>
+      <Box sx={{ color: iconColor, fontSize: 48 }}>{icon}</Box>
     </Card>
   );
 }
 
 export default function Dashboard() {
   const theme = useTheme();
+
   return (
     <Box>
-      <Typography variant="h4" sx={{ mb: 4, fontWeight: "bold" }}>
+      <Typography variant="h4" sx={{ mb: 4, fontWeight: "bold" , color: colors.deepUmber }}>
         Dashboard Overview
       </Typography>
 
@@ -73,7 +84,8 @@ export default function Dashboard() {
             title="Total Sales"
             value="$24,000"
             icon={<TrendingUpIcon fontSize="inherit" />}
-            color={theme.palette.mode === "dark" ? "#64b5f6" : "#2196f3"}
+            cardColor={colors.goldenWheat} // لون البطاقة من الهوية البصرية
+            iconColor={"rgba(255, 255, 255, 0.6)"}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
@@ -81,7 +93,8 @@ export default function Dashboard() {
             title="Orders"
             value="1,250"
             icon={<ShoppingCartIcon fontSize="inherit" />}
-            color={theme.palette.mode === "dark" ? "#81c784" : "#4caf50"}
+            cardColor={colors.deepUmber} // لون البطاقة من الهوية البصرية
+            iconColor={"rgba(255, 255, 255, 0.6)"}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
@@ -89,7 +102,8 @@ export default function Dashboard() {
             title="Customers"
             value="3,400"
             icon={<PeopleIcon fontSize="inherit" />}
-            color={theme.palette.mode === "dark" ? "#ffb74d" : "#ff9800"}
+            cardColor={colors.forest} // لون البطاقة من الهوية البصرية
+            iconColor={"rgba(255, 255, 255, 0.6)"}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
@@ -97,29 +111,30 @@ export default function Dashboard() {
             title="Categories"
             value="45"
             icon={<CategoryIcon fontSize="inherit" />}
-            color={theme.palette.mode === "dark" ? "#ba68c8" : "#9c27b0"}
+            cardColor={colors.charcoal} // لون البطاقة من الهوية البصرية
+            iconColor={"rgba(255, 255, 255, 0.6)"}
           />
         </Grid>
       </Grid>
 
       {/* الرسم البياني للمبيعات */}
-      <Card sx={{ p: 2, overflowX: 'auto' }}> {/* إضافة overflowX */}
+      <Card sx={{ p: 2, overflowX: "auto" }}>
         <CardContent>
-          <Typography variant="h6" sx={{ mb: 3, fontWeight: "bold" }}>
+          <Typography variant="h6" sx={{ mb: 3, fontWeight: "bold", color: colors.charcoal }}>
             Monthly Sales
           </Typography>
           <ResponsiveContainer width="100%" height={400}>
             <LineChart data={salesData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" stroke={theme.palette.text.primary} />
-              <YAxis stroke={theme.palette.text.primary} />
+              <XAxis dataKey="month" stroke={colors.charcoal} />
+              <YAxis stroke={colors.charcoal} />
               <Tooltip />
               <Line
                 type="monotone"
                 dataKey="sales"
-                stroke={theme.palette.primary.main}
+                stroke={colors.deepUmber} // لون الخط من الهوية البصرية
                 strokeWidth={3}
-                dot={{ stroke: theme.palette.primary.main, strokeWidth: 2, r: 4 }}
+                dot={{ stroke: colors.goldenWheat, strokeWidth: 2, r: 4 }} // لون النقطة من الهوية البصرية
               />
             </LineChart>
           </ResponsiveContainer>

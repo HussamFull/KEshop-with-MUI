@@ -16,6 +16,8 @@ const drawerWidth = 240;
 const AppBarStyled = styled(AppBar, {
   shouldForwardProp: (prop) => prop !== "open",
 })(({ theme, open }) => ({
+  backgroundColor: theme.palette.primary.main, // لون أساسي من الثيم
+  color: theme.palette.secondary.main, // لون ثانوي من الثيم
   transition: theme.transitions.create(["margin", "width"], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -37,7 +39,6 @@ export default function Navbar({ open, handleDrawerToggle, children }) {
   return (
     <AppBarStyled position="fixed" open={open}>
       <Toolbar>
-        {/* الزر يظهر فقط في حالة الموبايل أو عندما يكون الشريط الجانبي مغلقاً على الشاشات الكبيرة */}
         <IconButton
           color="inherit"
           aria-label="toggle drawer"
@@ -48,7 +49,7 @@ export default function Navbar({ open, handleDrawerToggle, children }) {
           <MenuIcon />
         </IconButton>
         <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-          Admin Dashboard
+          Syrian Admin Dashboard
         </Typography>
         {children}
       </Toolbar>

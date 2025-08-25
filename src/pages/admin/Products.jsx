@@ -2,9 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
   Grid,
-  Card,
-  CardContent,
-  CardMedia,
   Typography,
   Button,
   Dialog,
@@ -23,9 +20,10 @@ import {
   Paper,
   IconButton,
   InputAdornment,
+  useTheme, // Added useTheme hook
+  MenuItem, // Added MenuItem for dropdown
 } from "@mui/material";
 
-// جميل
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SearchIcon from "@mui/icons-material/Search";
@@ -38,7 +36,7 @@ const api = axios.create({
 });
 
 const categoriesApi = axios.create({
-  baseURL: "https://localhost:7227/api/Admin/Categories",
+  baseURL: "https://localhost:7227/api/Admin/CategoriesControllers", // Corrected URL based on previous examples
   headers: { Authorization: `Bearer ${TOKEN}` },
 });
 const brandsApi = axios.create({
@@ -47,6 +45,7 @@ const brandsApi = axios.create({
 });
 
 export default function Products() {
+  const theme = useTheme();
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -69,10 +68,14 @@ export default function Products() {
 
   const fetchAllData = async () => {
     try {
-      const [productsRes] = await Promise.all([
+      const [productsRes, categoriesRes, brandsRes] = await Promise.all([
         api.get(""),
+        categoriesApi.get(""),
+        brandsApi.get(""),
       ]);
       setProducts(productsRes.data);
+      setCategories(categoriesRes.data);
+      setBrands(brandsRes.data);
     } catch (err) {
       console.error(err);
       setSnackbar({
@@ -184,12 +187,11 @@ export default function Products() {
 
   return (
     <div style={{ padding: 20 }}>
-      <Typography variant="h4" gutterBottom>
-        Products 🛍️
+      <Typography variant="h4" gutterBottom sx={{ color: theme.palette.primary.main, fontWeight: "bold" }}>
+        Products Management 🛍️
       </Typography>
 
-      {/* Grid container with reverse direction for right-to-left alignment */}
-      <Grid container spacing={2} alignItems="center" style={{ marginBottom: 20 }} direction="row-reverse">
+      <Grid container spacing={2} alignItems="center" sx={{ mb: 3 }}>
         <Grid item xs={12} sm={8}>
           <TextField
             fullWidth
@@ -197,29 +199,44 @@ export default function Products() {
             variant="outlined"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 25,
+                backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.paper : theme.palette.grey[100],
+                "& fieldset": {
+                  borderColor: theme.palette.primary.main,
+                },
+                "&:hover fieldset": {
+                  borderColor: theme.palette.primary.light,
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: theme.palette.primary.main,
+                },
+              },
+            }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon color="action" />
+                  <SearchIcon sx={{ color: theme.palette.text.secondary }} />
                 </InputAdornment>
               ),
-              style: {
-                borderRadius: 25,
-                backgroundColor: "#f5f5f5",
-              },
             }}
           />
         </Grid>
         <Grid item xs={12} sm={4}>
           <Button
             variant="contained"
-            color="primary"
             onClick={() => handleOpen()}
             fullWidth
-            style={{
+            sx={{
               height: "56px",
               borderRadius: 25,
               fontWeight: "bold",
+              bgcolor: theme.palette.primary.main,
+              color: theme.palette.secondary.main,
+              "&:hover": {
+                bgcolor: theme.palette.primary.dark,
+              },
             }}
           >
             + Add New Product
@@ -227,25 +244,25 @@ export default function Products() {
         </Grid>
       </Grid>
 
-      <TableContainer component={Paper} elevation={3} style={{ borderRadius: 15, overflow: "hidden" }}>
+      <TableContainer component={Paper} elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
         <Table>
-          <TableHead style={{ backgroundColor: "#1976d2" }}>
+          <TableHead sx={{ bgcolor: theme.palette.primary.main }}>
             <TableRow>
-              <TableCell style={{ color: "white", fontWeight: "bold" }}>Image</TableCell>
-              <TableCell style={{ color: "white", fontWeight: "bold" }}>Name</TableCell>
-              <TableCell style={{ color: "white", fontWeight: "bold" }}>Description</TableCell>
-              <TableCell style={{ color: "white", fontWeight: "bold" }}>Category ID</TableCell>
-              <TableCell style={{ color: "white", fontWeight: "bold" }}>Brand ID</TableCell>
-              <TableCell style={{ color: "white", fontWeight: "bold" }}>Actions</TableCell>
+              <TableCell sx={{ color: theme.palette.secondary.main, fontWeight: "bold" }}>Image</TableCell>
+              <TableCell sx={{ color: theme.palette.secondary.main, fontWeight: "bold" }}>Name</TableCell>
+              <TableCell sx={{ color: theme.palette.secondary.main, fontWeight: "bold" }}>Description</TableCell>
+              <TableCell sx={{ color: theme.palette.secondary.main, fontWeight: "bold" }}>Category</TableCell>
+              <TableCell sx={{ color: theme.palette.secondary.main, fontWeight: "bold" }}>Brand</TableCell>
+              <TableCell sx={{ color: theme.palette.secondary.main, fontWeight: "bold" }}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {filteredProducts.length > 0 ? (
               filteredProducts.map((product) => (
-                <TableRow key={product.id}>
+                <TableRow key={product.id} sx={{ '&:hover': { bgcolor: theme.palette.action.hover } }}>
                   <TableCell>
                     <img
-                      src={product.mainImageUrl}
+                      src={`https://localhost:7227/images/${product.mainImageUrl}`}
                       alt={product.name}
                       style={{
                         width: 80,
@@ -255,15 +272,20 @@ export default function Products() {
                       }}
                     />
                   </TableCell>
-                  <TableCell>{product.name}</TableCell>
-                  <TableCell>{product.description}</TableCell>
-                  <TableCell>{product.categoryId}</TableCell>
-                  <TableCell>{product.brandId}</TableCell>
+                  <TableCell sx={{ color: theme.palette.text.primary }}>{product.name}</TableCell>
+                  <TableCell sx={{ color: theme.palette.text.primary }}>{product.description}</TableCell>
+                  <TableCell sx={{ color: theme.palette.text.primary }}>
+                    {categories.find(c => c.id === product.categoryId)?.name || 'N/A'}
+                  </TableCell>
+                  <TableCell sx={{ color: theme.palette.text.primary }}>
+                    {brands.find(b => b.id === product.brandId)?.name || 'N/A'}
+                  </TableCell>
                   <TableCell>
                     <IconButton
                       color="primary"
                       onClick={() => handleOpen(product)}
                       size="small"
+                      sx={{ color: theme.palette.primary.main }}
                     >
                       <EditIcon />
                     </IconButton>
@@ -271,6 +293,7 @@ export default function Products() {
                       color="error"
                       onClick={() => handleDelete(product.id)}
                       size="small"
+                      sx={{ color: theme.palette.secondary.main }}
                     >
                       <DeleteIcon />
                     </IconButton>
@@ -279,7 +302,7 @@ export default function Products() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6} align="center">
+                <TableCell colSpan={6} align="center" sx={{ color: theme.palette.text.secondary }}>
                   No products to display.
                 </TableCell>
               </TableRow>
@@ -290,7 +313,9 @@ export default function Products() {
 
       {/* Dialog Form */}
       <Dialog open={open} onClose={handleClose} fullWidth>
-        <DialogTitle>{editingProduct ? "Edit Product" : "Add Product"}</DialogTitle>
+        <DialogTitle sx={{ color: theme.palette.primary.main }}>
+          {editingProduct ? "Edit Product" : "Add Product"}
+        </DialogTitle>
         <DialogContent>
           <TextField
             fullWidth
@@ -298,48 +323,74 @@ export default function Products() {
             label="Name"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            sx={{
+              "& label.Mui-focused": { color: theme.palette.primary.main },
+              "& .MuiInput-underline:after": { borderBottomColor: theme.palette.primary.main },
+            }}
           />
           <TextField
             fullWidth
             margin="dense"
             label="Description"
             value={formData.description}
-            onChange={(e) =>
-              setFormData({ ...formData, description: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            sx={{
+              "& label.Mui-focused": { color: theme.palette.primary.main },
+              "& .MuiInput-underline:after": { borderBottomColor: theme.palette.primary.main },
+            }}
           />
+          <TextField
+            select
+            fullWidth
+            margin="dense"
+            label="Category"
+            value={formData.categoryId}
+            onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
+            sx={{
+              "& label.Mui-focused": { color: theme.palette.primary.main },
+              "& .MuiInput-underline:after": { borderBottomColor: theme.palette.primary.main },
+            }}
+          >
+            {categories.map((cat) => (
+              <MenuItem key={cat.id} value={cat.id}>
+                {cat.name}
+              </MenuItem>
+            ))}
+          </TextField>
+          <TextField
+            select
+            fullWidth
+            margin="dense"
+            label="Brand"
+            value={formData.brandId}
+            onChange={(e) => setFormData({ ...formData, brandId: e.target.value })}
+            sx={{
+              "& label.Mui-focused": { color: theme.palette.primary.main },
+              "& .MuiInput-underline:after": { borderBottomColor: theme.palette.primary.main },
+            }}
+          >
+            {brands.map((brand) => (
+              <MenuItem key={brand.id} value={brand.id}>
+                {brand.name}
+              </MenuItem>
+            ))}
+          </TextField>
           <div style={{ margin: "10px 0" }}>
-            <Typography variant="body1">Upload Main Image</Typography>
+            <Typography variant="body1" sx={{ color: theme.palette.text.primary }}>
+              Upload Main Image
+            </Typography>
             <input
               type="file"
               onChange={(e) => setMainImageFile(e.target.files[0])}
               style={{ marginTop: 8 }}
             />
           </div>
-          <TextField
-            fullWidth
-            margin="dense"
-            label="Category ID"
-            value={formData.categoryId}
-            onChange={(e) =>
-              setFormData({ ...formData, categoryId: e.target.value })
-            }
-            type="number"
-          />
-          <TextField
-            fullWidth
-            margin="dense"
-            label="Brand ID"
-            value={formData.brandId}
-            onChange={(e) =>
-              setFormData({ ...formData, brandId: e.target.value })
-            }
-            type="number"
-          />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleSave} variant="contained" color="primary">
+          <Button onClick={handleClose} sx={{ color: theme.palette.text.secondary }}>
+            Cancel
+          </Button>
+          <Button onClick={handleSave} variant="contained" sx={{ bgcolor: theme.palette.primary.main, color: theme.palette.secondary.main, "&:hover": { bgcolor: theme.palette.primary.dark } }}>
             Save
           </Button>
         </DialogActions>

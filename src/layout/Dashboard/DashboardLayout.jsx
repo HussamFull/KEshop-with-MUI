@@ -14,7 +14,17 @@ import Brightness7Icon from "@mui/icons-material/Brightness7";
 import { Outlet } from "react-router-dom";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
-import { styled, useTheme } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
+
+// الألوان الجديدة من لوحة الألوان
+const colors = {
+  forest: "#002623",
+  goldenWheat: "#988561",
+  charcoal: "#161616",
+  deepUmber: "#260f14",
+  white: "#ffffff",
+  grey: "#d0d0d0",
+};
 
 const drawerWidth = 240;
 
@@ -37,7 +47,7 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
       marginLeft: 0,
     }),
     ...(!open && {
-      [theme.breakpoints.up('sm')]: {
+      [theme.breakpoints.up("sm")]: {
         marginLeft: theme.spacing(7),
       },
     }),
@@ -68,22 +78,27 @@ export default function DashboardLayout() {
   const theme = useMemo(
     () =>
       createTheme({
+        direction: "rtl", // إضافة الاتجاه من اليمين لليسار
         palette: {
           mode,
           ...(mode === "light"
             ? {
-                primary: { main: "#3f51b5" },
-                secondary: { main: "#f50057" },
-                background: { default: "#f4f6f8", paper: "#ffffff" },
+                // لوحة الألوان في الوضع الفاتح
+                primary: { main: colors.deepUmber },
+                secondary: { main: colors.goldenWheat },
+                background: { default: colors.white, paper: colors.white },
+                text: { primary: colors.charcoal },
               }
             : {
-                primary: { main: "#90caf9" },
-                secondary: { main: "#f48fb1" },
-                background: { default: "#121212", paper: "#1e1e1e" },
+                // لوحة الألوان في الوضع المظلم
+                primary: { main: colors.goldenWheat },
+                secondary: { main: colors.deepUmber },
+                background: { default: colors.charcoal, paper: colors.forest },
+                text: { primary: colors.white, secondary: colors.grey },
               }),
         },
         typography: {
-          fontFamily: "'Roboto', sans-serif",
+          fontFamily: "'Cairo', sans-serif", // تغيير الخط إلى خط مناسب
         },
         components: {
           MuiCard: {
@@ -91,8 +106,8 @@ export default function DashboardLayout() {
               root: {
                 borderRadius: 16,
                 boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
-                ...(mode === 'dark' && {
-                  boxShadow: '0 8px 24px rgba(255,255,255,0.06)',
+                ...(mode === "dark" && {
+                  boxShadow: "0 8px 24px rgba(255,255,255,0.06)",
                 }),
               },
             },
@@ -103,7 +118,6 @@ export default function DashboardLayout() {
   );
 
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  // قم بتغيير القيمة الأولية لحالة الشريط الجانبي بناءً على حجم الشاشة
   const [open, setOpen] = useState(!isMobile);
 
   const handleDrawerToggle = () => setOpen(!open);
@@ -117,7 +131,10 @@ export default function DashboardLayout() {
           handleDrawerToggle={handleDrawerToggle}
           isMobile={isMobile}
         >
-          <IconButton sx={{ ml: 1 }} onClick={colorMode.toggleColorMode} color="inherit">
+          <IconButton
+            sx={{ ml: 1, color: theme.palette.secondary.main }} // تغيير لون الأيقونة
+            onClick={colorMode.toggleColorMode}
+          >
             {theme.palette.mode === "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
           </IconButton>
         </Navbar>

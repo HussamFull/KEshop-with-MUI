@@ -55,6 +55,10 @@ const StyledDrawer = styled(Drawer, { shouldForwardProp: (prop) => prop !== 'ope
     flexShrink: 0,
     whiteSpace: 'nowrap',
     boxSizing: 'border-box',
+    '& .MuiDrawer-paper': {
+      backgroundColor: theme.palette.background.paper, // لون الخلفية من الثيم
+      color: theme.palette.text.primary, // لون النص من الثيم
+    },
     ...(open && {
       ...openedMixin(theme),
       '& .MuiDrawer-paper': openedMixin(theme),
@@ -69,8 +73,7 @@ const StyledDrawer = styled(Drawer, { shouldForwardProp: (prop) => prop !== 'ope
 const menuItems = [
   { text: "Dashboard", icon: <DashboardIcon />, path: "/admin" },
   { text: "Categories", icon: <CategoryIcon />, path: "/admin/categories" },
-    { text: "Brands", icon: <CategoryIcon />, path: "/admin/Brands" },
-
+  { text: "Brands", icon: <CategoryIcon />, path: "/admin/brands" },
   { text: "Products", icon: <ShoppingBagIcon />, path: "/admin/products" },
   { text: "Users", icon: <PeopleIcon />, path: "/admin/users" },
 ];
@@ -79,21 +82,21 @@ export default function Sidebar({ open, handleDrawerToggle, isMobile }) {
   const theme = useTheme();
 
   return (
-       <StyledDrawer
+    <StyledDrawer
       variant={isMobile ? "temporary" : "permanent"}
       anchor="left"
       open={open}
       onClose={handleDrawerToggle}
     >
-      <DrawerHeader>
+      <DrawerHeader sx={{ bgcolor: theme.palette.primary.main }}>
         <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1, ml: 2, overflow: 'hidden' }}>
           {open && (
-            <Typography variant="h6" noWrap>
-              My App
+            <Typography variant="h6" noWrap sx={{ color: theme.palette.secondary.main }}>
+              New Syria
             </Typography>
           )}
         </Box>
-        <IconButton onClick={handleDrawerToggle}>
+        <IconButton onClick={handleDrawerToggle} sx={{ color: theme.palette.secondary.main }}>
           <MenuIcon />
         </IconButton>
       </DrawerHeader>
@@ -104,13 +107,19 @@ export default function Sidebar({ open, handleDrawerToggle, isMobile }) {
             component={Link} 
             to={item.path} 
             onClick={isMobile ? handleDrawerToggle : undefined}
+            sx={{
+              color: theme.palette.text.primary,
+              '&:hover': {
+                bgcolor: theme.palette.secondary.main, // لون تمييز عند التحويم
+                color: theme.palette.primary.main,
+              },
+            }}
           >
-            <ListItemIcon>{item.icon}</ListItemIcon>
+            <ListItemIcon sx={{ color: theme.palette.secondary.main }}>{item.icon}</ListItemIcon>
             <ListItemText primary={item.text} sx={{ opacity: open ? 1 : 0 }} />
           </ListItem>
         ))}
       </List>
     </StyledDrawer>
-
   );
 }

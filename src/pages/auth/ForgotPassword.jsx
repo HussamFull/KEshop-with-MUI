@@ -203,7 +203,7 @@ Enter your email to reset your password.
                     sx={{ color: colors.goldenWheat }}
                   />
                 ) : (
-                  "إرسال"
+                  "Send"
                 )}
               </Button>
             </Box>
