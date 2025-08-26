@@ -6,6 +6,9 @@ import Home from './pages/Home/Home'; // Assuming you have a Home component
 import Register from './pages/register/Register';
 import Login from './pages/login/Login';
 import Cart from './pages/cart/Cart';
+import Category from './pages/category/Category';
+import Product from './pages/product/Product';
+import Brand from './pages/brand/Brand';
 import ForgotPassword from './pages/auth/ForgotPassword';
 
 import NotFound from './pages/NotFound';
@@ -53,6 +56,18 @@ const router = createBrowserRouter([
             {
                 path: "/Cart",
                 element: <Cart />,
+            },
+             {
+                path: "/category",
+                element: <Category />,
+            },
+            {
+                path: "/Brand",
+                element: <Brand />,
+            },
+            {
+                path: "/product",
+                element: <Product />,
             },
          ] 
         },

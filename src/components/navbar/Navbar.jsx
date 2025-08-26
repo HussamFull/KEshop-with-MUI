@@ -25,9 +25,9 @@ const colors = {
 
 const pages = [
   { name: 'Home', path: '/' },
-  { name: 'Categories', path: '/categories' },
-  { name: 'Products', path: '/products' },
-  { name: 'Brands', path: '/brands' },
+  { name: 'Categorys', path: '/Category' },
+  { name: 'Products', path: '/Product' },
+  { name: 'Brands', path: '/brand' },
   { name: 'Cart', path: '/cart' },
   { name: 'Register', path: '/register' },
   { name: 'Login', path: '/login' },
