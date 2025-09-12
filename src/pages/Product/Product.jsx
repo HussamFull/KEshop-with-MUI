@@ -275,6 +275,7 @@ export default function Product() {
                 <Grid item key={product.id} xs={12} sm={6} md={4} lg={3}>
                   <Card
                     sx={{
+                      maxWidth: 300,
                       height: '100%',
                       display: 'flex',
                       flexDirection: 'column',
@@ -337,7 +338,8 @@ export default function Product() {
                             whiteSpace: 'nowrap',
                           }}
                         >
-                          {truncateName(product.name, 20)}
+                          {product.name.split(' ').slice(0, 4).join(' ')}
+                          
                         </Typography>
                         {/* Fixed height for description */}
                         <Typography variant="body2" sx={{ color: colors.charcoal, mb: 2, minHeight: '3rem', overflow: 'hidden' }}>
