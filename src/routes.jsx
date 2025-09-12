@@ -8,6 +8,7 @@ import Login from './pages/login/Login';
 import Cart from './pages/cart/Cart';
 import Category from './pages/category/Category';
 import Product from './pages/product/Product';
+import ProductDetails from './pages/Product/ProductDetails';
 import Brand from './pages/brand/Brand';
 import ForgotPassword from './pages/auth/ForgotPassword';
 
@@ -19,6 +20,7 @@ import Brands from "./pages/admin/Brands";
 import Products from "./pages/admin/Products";
 import Users from "./pages/admin/Users";
 import ResetPassword from './pages/auth/ResetPassword';
+
 
 
 
@@ -68,6 +70,10 @@ const router = createBrowserRouter([
             {
                 path: "/product",
                 element: <Product />,
+            },
+             {
+                path: "/product/:id",
+                element: <ProductDetails />,
             },
          ] 
         },

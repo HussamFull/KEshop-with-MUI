@@ -61,7 +61,12 @@ export default function Login() {
     resolver: yupResolver(loginSchema),
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [serverError, setServerError] = useState("");
+  
   const [showPassword, setShowPassword] = useState(false);
+
+    
+  
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -72,15 +77,26 @@ export default function Login() {
     try {
       setIsLoading(true);
       const response = await axios.post(
-        "http://mytest1.runasp.net/api/Identity/Account/Login",
+        "https://kashop1.runasp.net/api/Identity/Account/Login",
         data
       );
+      // بعد تسجيل الدخول بنجاح، قم بتخزين التوكن أو أي بيانات أخرى حسب الحاجة
       console.log("Login successful:", response.data);
+      if (response.status === 200) {
+        localStorage.setItem("userToken", response.data.token);
+        navigate("/"); 
+      }
     } catch (error) {
-      console.error(
-        "Login failed:",
-        error.response ? error.response.data : error.message
-      );
+      console.error("Login failed:",error.response ? error.response.data : error.message);
+       if (error.response) {
+        // افترض أن الخادم يعيد رسالة خطأ في error.response.data.message
+        setServerError(error.response.data.message);
+      } else {
+        // في حال وجود خطأ غير متوقع
+        setServerError(
+          "Login failed. An unexpected error . Please try again."
+        );
+      }
     } finally {
       setIsLoading(false);
     }
@@ -161,6 +177,11 @@ export default function Login() {
               noValidate
               sx={{ mt: 1 }}
             >
+                {serverError && (
+                              <Typography color="error" sx={{ mb: 2 }}>
+                                {serverError}
+                              </Typography>
+                            )}
               <TextField
                 margin="normal"
                 required

@@ -75,7 +75,7 @@ export default function ForgotPassword() {
     try {
       setIsLoading(true);
       const response = await axios.post(
-        "http://mytest1.runasp.net/api/Identity/Account/forgot-password",
+        "https://kashop1.runasp.net/api/Identity/Account/forgot-password",
         data
       );
       console.log("Forgot password request successful:", response.data);

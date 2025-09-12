@@ -17,13 +17,10 @@ import syrianVisualIdentity from "./pattern.svg"; // ⬅️ هذا المسار 
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import registerSchema from "../../../validations/RegisterSchema";
-import InputAdornment from '@mui/material/InputAdornment';
-import IconButton from '@mui/material/IconButton';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-
-
-
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 // الألوان الجديدة من لوحة الألوان
 const colors = {
@@ -38,6 +35,9 @@ const colors = {
 const theme = createTheme({
   direction: "rtl",
   palette: {
+    error: {
+      main: "#f44336", // هذا هو اللون الأحمر الافتراضي للأخطاء في MUI
+    },
     primary: {
       main: colors.deepUmber, // لون الزر الرئيسي
     },
@@ -51,14 +51,7 @@ const theme = createTheme({
 });
 
 export default function Register() {
-
-  // yup 
-
-
-
-
-
-
+  // yup
 
   // استخدام React Hook Form لإدارة النموذج
   const {
@@ -66,25 +59,27 @@ export default function Register() {
     handleSubmit,
     formState: { errors },
   } = useForm({
-    resolver:yupResolver(registerSchema)
+    resolver: yupResolver(registerSchema),
   });
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-    const [showPassword, setShowPassword] = useState(false); // حالة جديدة
+  const [serverError, setServerError] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // حالة جديدة
 
-  // show Password 
-   const handleClickShowPassword = () => {
+  // show Password
+  const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
 
   const onSubmit = async (data) => {
+   
     console.log(data);
     try {
-      setIsLoading(true);
+       setIsLoading(true);
       // إرسال بيانات التسجيل إلى الخادم
       // const response = await axios.post('https://localhost:7227/api/Identity/Account/register', data);
       const response = await axios.post(
-        "http://mytest1.runasp.net/api/Identity/Account/Register",
+        "https://kashop1.runasp.net/api/Identity/Account/Register",
         data
       );
       console.log("Registration successful:", response.data);
@@ -92,8 +87,8 @@ export default function Register() {
       // localStorage.setItem('authToken', response.data.token);
 
       // إعادة توجيه المستخدم إلى صفحة تسجيل الدخول أو الصفحة الرئيسية
-      if(response.status == 200){
-         navigate('/login');
+      if (response.status == 200) {
+        navigate("/login");
       }
       //
     } catch (error) {
@@ -101,30 +96,31 @@ export default function Register() {
         "Registration failed:",
         error.response ? error.response.data : error.message
       );
-      // عرض رسالة خطأ للمستخدم
+      if (error.response) {
+        // افترض أن الخادم يعيد رسالة خطأ في error.response.data.message
+        setServerError(error.response.data.message);
+      } else {
+        // في حال وجود خطأ غير متوقع
+        setServerError(
+          "Registration failed. An unexpected error occurred. Please try again."
+        );
+      }
+      // يمكنك أيضاً استخدام Snackbar لإظهار رسالة الخطأ
+      // setSnackbarMessage(serverErrors);
+      // setSnackbarSeverity('error');
+      // setOpenSnackbar(true);
     } finally {
       setIsLoading(false);
     }
   };
 
-  {
-    /*
-  const [formData, setFormData] = useState({
-    email: '',
-    userName: '',
-    fullName: '',
-    phoneNumber: '',
-    password: '',
-  });
-*/
-  }
   const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   //const navigate = useNavigate();
 
-    const handleCloseSnackbar = (event, reason) => {
-    if (reason === 'clickaway') {
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
       return;
     }
     setOpenSnackbar(false);
@@ -187,8 +183,8 @@ export default function Register() {
               alignItems: "center",
               justifyContent: "center",
               bgcolor: colors.forest, // استخدام لون Forest للخلفية
-                  // إضافة: إخفاء الصورة على الشاشات الصغيرة جدًا لتحسين المساحة
-              display: { xs: "none", sm: "flex" }, 
+              // إضافة: إخفاء الصورة على الشاشات الصغيرة جدًا لتحسين المساحة
+              display: { xs: "none", sm: "flex" },
             }}
           >
             <Box
@@ -208,7 +204,7 @@ export default function Register() {
           <Box
             sx={{
               width: { xs: "100%", md: "50%" },
-             // التعديل الرئيسي هنا:
+              // التعديل الرئيسي هنا:
               py: { xs: 4, md: 8 }, // بادينغ عمودي
               px: { xs: 2, sm: 4, md: 8 }, // بادينغ أفقي مختلف للشاشات المختلفة
               display: "flex",
@@ -241,17 +237,20 @@ export default function Register() {
               noValidate
               sx={{ mt: 1 }}
             >
+              {serverError && (
+                <Typography color="error" sx={{ mb: 2 }}>
+                  {serverError}
+                </Typography>
+              )}
               <TextField
-              
                 margin="normal"
                 required
                 fullWidth
                 id="fullName"
-               
                 {...register("fullName")}
-                 label="Full Name"
-                 error={errors.fullName}
-                 helperText={errors.fullName?.message}
+                label="Full Name"
+                error={errors.fullName}
+                helperText={errors.fullName?.message}
                 //name="fullName"
                 autoComplete="fullName"
                 autoFocus
@@ -265,8 +264,8 @@ export default function Register() {
                 id="userName"
                 label="Username"
                 {...register("userName")}
-                 error={errors.userName}
-                 helperText={errors.userName?.message}
+                error={errors.userName}
+                helperText={errors.userName?.message}
                 //name="userName"
                 autoComplete="userName"
                 // value={formData.userName}
@@ -280,7 +279,7 @@ export default function Register() {
                 label="Email Address"
                 {...register("email")}
                 error={errors.email}
-                 helperText={errors.email?.message}
+                helperText={errors.email?.message}
                 //name="email"
                 autoComplete="email"
                 // value={formData.email}
@@ -293,25 +292,26 @@ export default function Register() {
                 id="phoneNumber"
                 label="Phone Number"
                 {...register("phoneNumber")}
-                 error={errors.phoneNumber}
-                 helperText={errors.phoneNumber?.message}
+                error={errors.phoneNumber}
+                helperText={errors.phoneNumber?.message}
                 //name="phoneNumber"
                 autoComplete="tel"
                 //value={formData.phoneNumber}
                 // onChange={handleChange}
               />
-               <TextField
+              <TextField
                 margin="normal"
                 required
                 fullWidth
-                {...register('password', { required: 'Password is required' })}
+                {...register("password", { required: "Password is required" })}
                 label="Password"
-                type={showPassword ? 'text' : 'password'} // 👈 تغيير نوع الحقل ديناميكياً
+                type={showPassword ? "text" : "password"} // 👈 تغيير نوع الحقل ديناميكياً
                 id="password"
                 autoComplete="new-password"
                 error={errors.password}
                 helperText={errors.password?.message}
-                InputProps={{ // 👈 إضافة أيقونة الرؤية
+                InputProps={{
+                  // 👈 إضافة أيقونة الرؤية
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton
@@ -351,12 +351,20 @@ export default function Register() {
           </Box>
         </Paper>
       </Container>
-       
-      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
-        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
           {snackbarMessage}
         </Alert>
-      </Snackbar> 
+      </Snackbar>
     </ThemeProvider>
   );
 }

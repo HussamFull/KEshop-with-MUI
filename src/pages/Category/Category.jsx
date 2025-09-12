@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Container,
@@ -6,11 +6,14 @@ import {
   Grid,
   Button,
   IconButton,
+  CircularProgress,
 } from '@mui/material';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import pattern from './pattern.svg';
+
+import axios from "axios";
 
 // Updated Color Palette
 const colors = {
@@ -95,21 +98,46 @@ const sliderCategories = [
   },
 ];
 
-// Dummy data for horizontal scroll
-const horizontalCategories = [
-  { id: 1, name: 'Glassware', image: 'https://images.unsplash.com/photo-1549487922-a9b31d8c119e?q=80&w=1974&auto=format&fit=crop' },
-  { id: 2, name: 'Pottery', image: 'https://images.unsplash.com/photo-1582046429219-c07a012a64c4?q=80&w=2835&auto=format&fit=crop' },
-  { id: 3, name: 'Handwoven Baskets', image: 'https://images.unsplash.com/photo-1555523097-f5778832a87a?q=80&w=1974&auto=format&fit=crop' },
-  { id: 4, name: 'Silk Scarves', image: 'https://images.unsplash.com/photo-1621609761923-d8c9735d4653?q=80&w=1974&auto=format&fit=crop' },
-  { id: 5, name: 'Syrian Soap', image: 'https://images.unsplash.com/photo-1621609761923-d8c9735d4653?q=80&w=1974&auto=format&fit=crop' },
-  { id: 6, name: 'Jewelry', image: 'https://images.unsplash.com/photo-1549487922-a9b31d8c119e?q=80&w=1974&auto=format&fit=crop' },
-  { id: 7, name: 'Wooden Toys', image: 'https://images.unsplash.com/photo-1582046429219-c07a012a64c4?q=80&w=2835&auto=format&fit=crop' },
-  { id: 8, name: 'Traditional Clothing', image: 'https://images.unsplash.com/photo-1555523097-f5778832a87a?q=80&w=1974&auto=format&fit=crop' },
 
-];
 
 export default function Category() {
   const [activeSlide, setActiveSlide] = React.useState(0);
+
+  const [Categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  const getCategories = async () => {
+    try {
+      const response = await axios.get("https://kashop1.runasp.net/api/Customer/Categories");
+      console.log("API Response:", response); // تحقق من الاستجابة
+     
+      setCategories(response.data);
+    } catch (error) {
+      console.error("Error fetching brands:", error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  useEffect(() => {
+    getCategories();
+  }, []);
+  
+  
+  if (loading) {
+    return (
+      <CircularProgress />
+      );
+  }
+  
+
+
+
+
+
+
 
   const handleNext = () => {
     setActiveSlide((prev) => (prev + 1) % sliderCategories.length);
@@ -248,7 +276,7 @@ export default function Category() {
               },
             }}
           >
-            {horizontalCategories.map((category) => (
+            {Categories.map((category) => (
               <Box
                 key={category.id}
                 sx={{
@@ -265,7 +293,7 @@ export default function Category() {
                   sx={{
                     width: '100%',
                     height: { xs: 200, sm: 250, md: 300 },
-                    backgroundImage: `url(${category.image})`,
+                    backgroundImage: `url(${pattern})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     borderRadius: 3,

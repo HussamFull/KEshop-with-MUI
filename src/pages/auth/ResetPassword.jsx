@@ -90,7 +90,7 @@ export default function ResetPassword() {
       };
 
       const response = await axios.patch(
-        "http://mytest1.runasp.net/api/Identity/Account/reset-password",
+        "https://kashop1.runasp.net/api/Identity/Account/reset-password",
         payload
       );
       console.log("Password reset successful:", response.data);
