@@ -1,4 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import CircularProgress from '@mui/material/CircularProgress';
 import {
   Box,
   Container,
@@ -11,6 +14,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { removeItem } from "framer-motion";
 
 // Updated Color Palette
 const colors = {
@@ -104,6 +108,125 @@ const total = subtotal + shipping;
 
 // Cart Page Component
 export default function Cart() {
+
+    
+    const navigate = useNavigate(); // هنا يتم تعريف useNavigate
+    const [carts, setCart] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+
+        // 🛠️ Fetch Product Details
+    const getCart = async () => {
+        try {
+           const token = localStorage.getItem("userToken");
+
+            // 1. تحقق من وجود التوكن
+            if (!token) {
+                console.error("User is not authenticated. Token not found.");
+                navigate("/login"); // توجيه المستخدم لصفحة تسجيل الدخول
+                return;
+            }
+            const response = await axios.get(
+                `https://kashop1.runasp.net/api/Customer/Carts`,
+                 {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                }
+            );
+            console.log("Cart :", response.data);
+            setCart(response.data);
+        } catch (error) {
+            setError("❌ Failed to load product details.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    
+ const removeItem = async (productId) => {
+        try {
+           const token = localStorage.getItem("userToken");
+            const response = await axios.delete(
+                `https://kashop1.runasp.net/api/Customer/Carts/${productId}`,
+                 {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                }
+            );
+            console.log("Cart :", response.data);
+           // setCart(response.data);
+            getCart();
+        } catch (error) {
+            setError("❌ Failed to load product details.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     useEffect(() => {
+            getCart();
+        }, []);
+    
+        // ⏳ Loading State
+        if (loading) {
+            return (
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        minHeight: "80vh",
+                    }}
+                >
+                    <CircularProgress />
+                </Box>
+            );
+        }
+    
+        // ⚠️ Error State
+        if (error) {
+            return (
+                <Box sx={{ textAlign: "center", py: 8 }}>
+                    <Typography variant="h5" color="error">
+                        {error}
+                    </Typography>
+                </Box>
+            );
+        }
+    
+
+
+
+
+
+
+
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ direction: 'ltr', bgcolor: colors.goldenWheatFaint, minHeight: '100vh', py: { xs: 4, md: 8 } }}>
@@ -134,12 +257,12 @@ export default function Cart() {
             {/* Cart Items List - Takes 12 columns on mobile, 7 on medium screens and up */}
             <Grid item xs={12} md={7} sx={{ minWidth: 0 }}>
               <Box sx={{ p: { xs: 2, md: 4 }, bgcolor: 'background.paper', borderRadius: 3, boxShadow: '0 8px 30px rgba(0,0,0,0.08)' }}>
-                {cartItems.length === 0 ? (
+                {carts.items.length === 0 ? (
                   <Typography variant="body1" align="center" sx={{ py: 4, color: colors.charcoal }}>
                     Your cart is currently a blank canvas.
                   </Typography>
                 ) : (
-                  cartItems.map((item, index) => (
+                  carts.items.map((item, index) => (
                     <Box key={item.id} sx={{
                       display: 'flex',
                       alignItems: 'center',
@@ -155,13 +278,13 @@ export default function Cart() {
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <Box
                           component="img"
-                          src={item.image}
-                          alt={item.name}
+                          src={item.mainImage}
+                          alt={item.productName}
                           sx={{ width: 80, height: 80, borderRadius: 2, objectFit: 'cover', border: `2px solid ${colors.goldenWheat}` }}
                         />
                         <Box sx={{ ml: 2 }}>
                           <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                            {item.name}
+                            {item.productName}
                           </Typography>
                           <Typography variant="body2" sx={{ color: colors.grey }}>
                             {item.price} SAR
@@ -175,7 +298,7 @@ export default function Cart() {
                             <RemoveIcon />
                           </IconButton>
                           <Typography variant="body1" sx={{ mx: 1, fontWeight: 'bold', color: colors.charcoal }}>
-                            {item.quantity}
+                            {item.count}
                           </Typography>
                           <IconButton aria-label="add" size="small" sx={{ color: colors.deepUmber }}>
                             <AddIcon />
@@ -183,10 +306,10 @@ export default function Cart() {
                         </Box>
 
                         <Typography variant="h6" sx={{ fontWeight: 'bold', minWidth: '80px', textAlign: 'center', mx: { xs: 1, md: 3 } }}>
-                          {item.price * item.quantity} SAR
+                          {item.totalPrice} SAR
                         </Typography>
 
-                        <IconButton aria-label="delete" sx={{ color: colors.goldenWheat, transition: 'color 0.3s ease', '&:hover': { color: colors.deepUmber } }}>
+                        <IconButton onClick={()=>removeItem(item.productId)} aria-label="delete" sx={{ color: colors.goldenWheat, transition: 'color 0.3s ease', '&:hover': { color: colors.deepUmber } }}>
                           <DeleteIcon />
                         </IconButton>
                       </Box>
@@ -199,7 +322,7 @@ export default function Cart() {
             {/* Order Summary Section - Takes 12 columns on mobile, 5 on medium screens and up */}
             <Grid item xs={12} md={5} sx={{ minWidth: 0 }}>
               <Box sx={{ p: { xs: 2, md: 4 }, bgcolor: colors.deepUmber, borderRadius: 3, boxShadow: '0 8px 30px rgba(0,0,0,0.1)', color: colors.goldenWheatFaint }}>
-                <Typography variant="h4" gutterBottom sx={{ mb: 4, fontWeight: 'bold', borderBottom: `2px solid ${colors.goldenWheat}`, pb: 1 }}>
+                <Typography variant="h4" gutterBottom sx={{ mb: 4, fontWeight: 'bold', color: colors.goldenWheat, borderBottom: `2px solid ${colors.goldenWheat}`, pb: 1 }}>
                   Order Summary
                 </Typography>
                 <Box sx={{ mb: 2 }}>
@@ -213,7 +336,7 @@ export default function Cart() {
                   </Box>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4, alignItems: 'baseline' }}>
                     <Typography variant="h5" sx={{ fontWeight: 'bold', color: colors.goldenWheat }}>Total:</Typography>
-                    <Typography variant="h5" sx={{ fontWeight: 'bold', color: colors.goldenWheat }}>{total} SAR</Typography>
+                    <Typography variant="h5" sx={{ fontWeight: 'bold', color: colors.goldenWheat }}>{carts.cartTotal} SAR</Typography>
                   </Box>
                 </Box>
                 <Button

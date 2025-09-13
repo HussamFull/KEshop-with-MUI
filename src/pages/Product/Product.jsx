@@ -84,6 +84,8 @@ const truncateName = (name, limit) => {
   return name.length > limit ? `${name.substring(0, limit)}...` : name;
 };
 
+
+
 export default function Product() {
   const [Products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -106,6 +108,45 @@ export default function Product() {
       setLoading(false);
     }
   };
+
+    // 🛒 Add to Cart Function
+    const addToCart = async (productId) => {
+        try {
+            const token = localStorage.getItem("userToken");
+
+            // 1. تحقق من وجود التوكن
+            if (!token) {
+                console.error("User is not authenticated. Token not found.");
+                navigate("/login"); // توجيه المستخدم لصفحة تسجيل الدخول
+                return;
+            }
+
+            const response = await axios.post(
+                `https://kashop1.runasp.net/api/Customer/Carts`,
+                { productId: productId }, // استخدم productId هنا
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                }
+            );
+            console.log("Product added to cart:", response.data);
+            alert("تم إضافة المنتج إلى السلة بنجاح! 🎉"); // إضافة تنبيه للمستخدم
+
+        } catch (error) {
+            // 2. معالجة الخطأ بشكل أفضل
+            if (error.response && error.response.status === 401) {
+                console.error("Authentication failed. Token is invalid or expired.", error.response.data);
+                // إزالة التوكن من الذاكرة وتوجيه المستخدم لتسجيل الدخول مرة أخرى
+                localStorage.removeItem("usertoken");
+                navigate("/login");
+            } else {
+                console.error("Error adding product to cart:", error.message);
+                alert("❌ فشل في إضافة المنتج إلى السلة. الرجاء المحاولة مرة أخرى.");
+            }
+        }
+    };
+
 
   useEffect(() => {
     getProducts();
@@ -382,6 +423,7 @@ export default function Product() {
                             bgcolor: colors.goldenWheatFaint,
                           },
                         }}
+                        onClick={() => addToCart(product.id)}
                       >
                         Add to Cart
                       </Button>
