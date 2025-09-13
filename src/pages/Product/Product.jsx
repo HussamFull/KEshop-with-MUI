@@ -21,8 +21,9 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from "axios";
 import pattern from './pattern.svg';
-import { Link } from 'react-router-dom'; // تأكد من استيراد Link
+import { Link, useNavigate } from 'react-router-dom'; // تأكد من استيراد Link
 import AxiosUserInstanse from "../../api/AxiosUserInstanse";
+import { Slide, toast } from "react-toastify";
 
 
 // Updated Color Palette
@@ -91,6 +92,7 @@ export default function Product() {
   const [Products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
   
   // نقل هذه الـ Hooks إلى أعلى المكون
   const [activeSlide, setActiveSlide] = useState(0);
@@ -111,39 +113,88 @@ export default function Product() {
   };
 
     // 🛒 Add to Cart Function
-    const addToCart = async (productId) => {
-        try {
-            const token = localStorage.getItem("userToken");
+  // 🛒 Add to Cart Function
+const addToCart = async (productId) => {
+  try {
+    const token = localStorage.getItem("userToken");
 
-            // 1. تحقق من وجود التوكن
-            if (!token) {
-                console.error("User is not authenticated. Token not found.");
-                navigate("/login"); // توجيه المستخدم لصفحة تسجيل الدخول
-                return;
-            }
+    // 1. تحقق من وجود التوكن
+    if (!token) {
+      toast.error('You must be logged in to add products to the cart.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      navigate("/login");
+      return; // توقف عن تنفيذ الدالة هنا
+    }
 
-            const response = await AxiosUserInstanse.post(
-                `/Carts`,
-                { productId: productId }, // استخدم productId هنا
-                
-            );
-            console.log("Product added to cart:", response.data);
-            alert("تم إضافة المنتج إلى السلة بنجاح! 🎉"); // إضافة تنبيه للمستخدم
-
-        } catch (error) {
-            // 2. معالجة الخطأ بشكل أفضل
-            if (error.response && error.response.status === 401) {
-                console.error("Authentication failed. Token is invalid or expired.", error.response.data);
-                // إزالة التوكن من الذاكرة وتوجيه المستخدم لتسجيل الدخول مرة أخرى
-                localStorage.removeItem("usertoken");
-                navigate("/login");
-            } else {
-                console.error("Error adding product to cart:", error.message);
-                alert("❌ فشل في إضافة المنتج إلى السلة. الرجاء المحاولة مرة أخرى.");
-            }
-        }
+    // قم بتمرير التوكن في الـ headers
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     };
 
+    const response = await AxiosUserInstanse.post(
+      `/Carts`,
+      { productId: productId },
+      config // أضف الـ config هنا
+    );
+
+    if (response.status === 200) {
+      toast.success('Product added to cart successfully!', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        // transition: Slide,
+      });
+    }
+
+    console.log("Product added to cart:", response.data);
+
+  } catch (error) {
+    // 2. معالجة الخطأ بشكل أفضل
+    if (error.response && error.response.status === 401) {
+      toast.error('Authentication failed. Please log in again.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+
+      console.error("Authentication failed. Token is invalid or expired.", error.response.data);
+      localStorage.removeItem("userToken"); // يجب استخدام نفس المفتاح "userToken"
+      navigate("/login");
+    } else {
+      console.error("Error adding product to cart:", error.message);
+      toast.error('Failed to add item to cart. Please try again.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    }
+  }
+};
 
   useEffect(() => {
     getProducts();

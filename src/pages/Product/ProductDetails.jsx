@@ -20,6 +20,7 @@ import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom"; // تأكد من إضافة useNavigate
 import { motion } from "framer-motion";
 import AxiosUserInstanse from "../../api/AxiosUserInstanse";
+import { Slide, toast } from "react-toastify";
 
 // 🎨 Updated Color Palette
 const colors = {
@@ -81,6 +82,19 @@ export default function ProductDetails() {
             // 1. تحقق من وجود التوكن
             if (!token) {
                 console.error("User is not authenticated. Token not found.");
+                toast.error('You must Login . Please try again. ', {
+position: "top-right",
+autoClose: 5000,
+hideProgressBar: false,
+closeOnClick: false,
+pauseOnHover: true,
+draggable: true,
+progress: undefined,
+theme: "light",
+transition: Slide,
+});
+                //alert("❌ فشل في إضافة المنتج إلى السلة. الرجاء المحاولة مرة أخرى.");
+           
                 navigate("/login"); // توجيه المستخدم لصفحة تسجيل الدخول
                 return;
             }
@@ -89,19 +103,59 @@ export default function ProductDetails() {
                 `/Carts`,
                 { productId: id },    
                  );
+
+                 if (response.status === 200) {
+                  toast.success('Product added to cart successfully !', {
+                  position: "top-right",
+                  autoClose: 5000,
+                  hideProgressBar: false,
+                  closeOnClick: false,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                  theme: "light",
+                  transition: Slide,
+                  });
+                }
+
             console.log("Product added to cart:", response.data);
-            alert("تم إضافة المنتج إلى السلة بنجاح! 🎉"); // إضافة تنبيه للمستخدم
+           // alert("تم إضافة المنتج إلى السلة بنجاح! 🎉"); // إضافة تنبيه للمستخدم
 
         } catch (error) {
             // 2. معالجة الخطأ بشكل أفضل
             if (error.response && error.response.status === 401) {
+
+              toast.error('Authentication failed. Token is invalid or expired.', {
+position: "top-right",
+autoClose: 5000,
+hideProgressBar: false,
+closeOnClick: false,
+pauseOnHover: true,
+draggable: true,
+progress: undefined,
+theme: "light",
+transition: Slide,
+});
+
+
                 console.error("Authentication failed. Token is invalid or expired.", error.response.data);
                 // إزالة التوكن من الذاكرة وتوجيه المستخدم لتسجيل الدخول مرة أخرى
                 localStorage.removeItem("usertoken");
                 navigate("/login");
             } else {
                 console.error("Error adding product to cart:", error.message);
-                alert("❌ فشل في إضافة المنتج إلى السلة. الرجاء المحاولة مرة أخرى.");
+                              toast.error('Failed to add item to cart. Please try again. ', {
+position: "top-right",
+autoClose: 5000,
+hideProgressBar: false,
+closeOnClick: false,
+pauseOnHover: true,
+draggable: true,
+progress: undefined,
+theme: "light",
+transition: Slide,
+});
+                //alert("❌ فشل في إضافة المنتج إلى السلة. الرجاء المحاولة مرة أخرى.");
             }
         }
     };

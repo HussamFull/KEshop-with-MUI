@@ -22,7 +22,8 @@ import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-
+import { toast, Slide } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 // الألوان الجديدة من لوحة الألوان
@@ -84,6 +85,20 @@ export default function Login() {
       console.log("Login successful:", response.data);
       if (response.status === 200) {
         localStorage.setItem("userToken", response.data.token);
+  
+        if (response.status === 200) {
+        toast.success('Login was successfully !', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Slide,
+        });
+      } 
         navigate("/"); 
       }
     } catch (error) {
