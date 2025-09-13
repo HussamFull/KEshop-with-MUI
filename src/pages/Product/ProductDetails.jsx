@@ -19,6 +19,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom"; // تأكد من إضافة useNavigate
 import { motion } from "framer-motion";
+import AxiosUserInstanse from "../../api/AxiosUserInstanse";
 
 // 🎨 Updated Color Palette
 const colors = {
@@ -73,7 +74,7 @@ export default function ProductDetails() {
     };
 
     // 🛒 Add to Cart Function
-    const addToCart = async (productId) => {
+    const addToCart = async (id) => {
         try {
             const token = localStorage.getItem("userToken");
 
@@ -84,15 +85,10 @@ export default function ProductDetails() {
                 return;
             }
 
-            const response = await axios.post(
-                `https://kashop1.runasp.net/api/Customer/Carts`,
-                { productId: productId }, // استخدم productId هنا
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    },
-                }
-            );
+            const response = await AxiosUserInstanse.post(
+                `/Carts`,
+                { productId: id },    
+                 );
             console.log("Product added to cart:", response.data);
             alert("تم إضافة المنتج إلى السلة بنجاح! 🎉"); // إضافة تنبيه للمستخدم
 

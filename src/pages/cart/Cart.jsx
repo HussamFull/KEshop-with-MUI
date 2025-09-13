@@ -15,6 +15,7 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { removeItem } from "framer-motion";
+import AxiosUserInstanse from "../../api/AxiosUserInstanse";
 
 // Updated Color Palette
 const colors = {
@@ -73,30 +74,6 @@ const theme = createTheme({
   },
 });
 
-// Dummy cart items
-const cartItems = [
-  {
-    id: 1,
-    name: "Traditional Syrian Product",
-    image: "https://via.placeholder.com/150x150.png?text=Product+1",
-    price: 150,
-    quantity: 1,
-  },
-  {
-    id: 2,
-    name: "Syrian Handicrafts",
-    image: "https://via.placeholder.com/150x150.png?text=Product+2",
-    price: 220,
-    quantity: 2,
-  },
-  {
-    id: 3,
-    name: "Damascene Textiles",
-    image: "https://via.placeholder.com/150x150.png?text=Product+3",
-    price: 300,
-    quantity: 1,
-  },
-];
 
 const subtotal = cartItems.reduce(
   (acc, item) => acc + item.price * item.quantity,
@@ -187,20 +164,15 @@ export default function Cart() {
     }
   };
 
-  // Fetch cart data on component mount   https://kashop1.runasp.net/api/Customer/Carts/increment/1
-
+  // Fetch cart data on component mount   
 
   const incrementItem = async (productId) => {
     try {
       const token = localStorage.getItem("userToken");
-      const response = await axios.post(
-        `https://kashop1.runasp.net/api/Customer/Carts/increment/${productId}`,
+      const response = await AxiosUserInstanse.post(
+        `/Carts/increment/${productId}`,
         {}, 
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, 
-          },
-        }
+        
       );
       console.log("Incremented Item:", response.data);
       if (response.status === 200){
@@ -212,7 +184,7 @@ export default function Cart() {
       setLoading(false);
     }   
   };
-  
+
   // 🛠️ Decrement Item Function - Simplified and Fixed
   const decrementItem = async (productId) => {
     try {
@@ -229,12 +201,10 @@ export default function Cart() {
       if (currentItem && currentItem.count === 1) {
           await removeItem(productId);
       } else {
-        await axios.post(
-          `https://kashop1.runasp.net/api/Customer/Carts/decrement/${productId}`,
+        await AxiosUserInstanse.post(
+          `/Carts/decrement/${productId}`,
           {},
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+         
         );
         // After a successful operation, get the updated cart from the server
         getCart();

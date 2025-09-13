@@ -3,6 +3,9 @@ import { Box, Container, Typography, Grid, CircularProgress } from "@mui/materia
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import pattern from "./pattern.svg";
 import axios from "axios";
+import AxiosInstanse from "../../api/AxiosInstanse";
+      
+
 
 // Updated Color Palette
 const colors = {
@@ -71,7 +74,7 @@ const [error, setError] = useState(null);
 
 const getBrands = async () => {
   try {
-    const response = await axios.get("https://kashop1.runasp.net/api/Customer/Brands");
+    const response = await AxiosInstanse.get("/Brands");
     console.log("API Response:", response); // تحقق من الاستجابة
    
     setBrands(response.data);

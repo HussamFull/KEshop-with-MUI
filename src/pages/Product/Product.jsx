@@ -22,6 +22,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from "axios";
 import pattern from './pattern.svg';
 import { Link } from 'react-router-dom'; // تأكد من استيراد Link
+import AxiosUserInstanse from "../../api/AxiosUserInstanse";
 
 
 // Updated Color Palette
@@ -121,14 +122,10 @@ export default function Product() {
                 return;
             }
 
-            const response = await axios.post(
-                `https://kashop1.runasp.net/api/Customer/Carts`,
+            const response = await AxiosUserInstanse.post(
+                `/Carts`,
                 { productId: productId }, // استخدم productId هنا
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    },
-                }
+                
             );
             console.log("Product added to cart:", response.data);
             alert("تم إضافة المنتج إلى السلة بنجاح! 🎉"); // إضافة تنبيه للمستخدم
