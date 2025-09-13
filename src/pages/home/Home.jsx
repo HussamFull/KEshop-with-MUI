@@ -15,6 +15,8 @@ import {
   createTheme,
 } from '@mui/material';
 import pattern from './pattern.svg'; // تأكد من المسار الصحيح لصورة الخلفية
+import Category from '../Category/Category';
+import Product from '../Product/Product';
 
 // الألوان الجديدة من لوحة الألوان
 const colors = {
@@ -155,6 +157,9 @@ Discover our collection now                    </Button>
 
                   </Container>
                 </Box>
+
+                <Category />
+                <Product />
 
         {/* Hero Section */}
         <Box
