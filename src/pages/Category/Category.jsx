@@ -12,6 +12,10 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import pattern from './pattern.svg';
+import AxiosInstanse from "../../api/AxiosInstanse";
+import { useQuery } from "@tanstack/react-query";
+
+
 
 import axios from "axios";
 
@@ -103,34 +107,32 @@ const sliderCategories = [
 export default function Category() {
   const [activeSlide, setActiveSlide] = React.useState(0);
 
-  const [Categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  
-  const getCategories = async () => {
-    try {
-      const response = await axios.get("https://kashop1.runasp.net/api/Customer/Categories");
-      console.log("API Response:", response); // تحقق من الاستجابة
-     
-      setCategories(response.data);
-    } catch (error) {
-      console.error("Error fetching brands:", error);
-      setError(error.message);
-    } finally {
-      setLoading(false);
-    }
+  const fetchCategories = async () => {
+    const response = await AxiosInstanse.get("/Categories");
+    return response;
   };
-  
-  useEffect(() => {
-    getCategories();
-  }, []);
-  
-  
-  if (loading) {
-    return (
-      <CircularProgress />
-      );
+  const {
+    data,
+    error,
+    isError,
+    isLoading: loading,
+  } = useQuery({
+    queryKey: ["Categories"],
+    queryFn: fetchCategories,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  console.log("API Response:", data); // تحقق من الاستجابة
+
+  if (isError) {
+    return <div>Error: {error.message}</div>;
   }
+
+  if (loading) {
+    return <CircularProgress />;
+  }
+
+
   
 
 
@@ -276,7 +278,7 @@ export default function Category() {
               },
             }}
           >
-            {Categories.map((category) => (
+            {data.data.map((category) => (
               <Box
                 key={category.id}
                 sx={{

@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Box, Container, Typography, Grid, CircularProgress } from "@mui/material";
+import {
+  Box,
+  Container,
+  Typography,
+  Grid,
+  CircularProgress,
+} from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import pattern from "./pattern.svg";
 import axios from "axios";
 import AxiosInstanse from "../../api/AxiosInstanse";
-      
-
+import { useQuery } from "@tanstack/react-query";
 
 // Updated Color Palette
 const colors = {
@@ -64,42 +69,31 @@ const theme = createTheme({
   },
 });
 
-
-
 export default function Brand() {
-
-const [brands, setBrands] = useState([]);
-const [loading, setLoading] = useState(true);
-const [error, setError] = useState(null);
-
-const getBrands = async () => {
-  try {
+  const fetchBrands = async () => {
     const response = await AxiosInstanse.get("/Brands");
-    console.log("API Response:", response); // تحقق من الاستجابة
-   
-    setBrands(response.data);
-  } catch (error) {
-    console.error("Error fetching brands:", error);
-    setError(error.message);
-  } finally {
-    setLoading(false);
+    return response;
+  };
+  const {
+    data,
+    error,
+    isError,
+    isLoading: loading,
+  } = useQuery({
+    queryKey: ["brands"],
+    queryFn: fetchBrands,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  console.log("API Response:", data); // تحقق من الاستجابة
+
+  if (isError) {
+    return <div>Error: {error.message}</div>;
   }
-};
 
-useEffect(() => {
-  getBrands();
-}, []);
-
-
-if (loading) {
-  return (
-    <CircularProgress />
-    );
-}
-
-
-
-
+  if (loading) {
+    return <CircularProgress />;
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -181,7 +175,7 @@ if (loading) {
               },
             }}
           >
-            {brands.map((brand) => (
+            {data.data.map((brand) => (
               <Box
                 key={brand.id}
                 sx={{

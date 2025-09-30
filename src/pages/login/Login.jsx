@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import {  useNavigate } from "react-router-dom";
+import {  useNavigate, useOutletContext } from "react-router-dom";
 import syrianVisualIdentity from "../register/pattern.svg"; // ⬅️ المسار الصحيح
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -53,6 +53,7 @@ const theme = createTheme({
 
 export default function Login() {
     const navigate = useNavigate(); // تم إضافة useNavigate
+    const { setIsloggendIn } = useOutletContext(); // الحصول على setIsloggendIn من السياق
 
   const {
     register,
@@ -85,6 +86,7 @@ export default function Login() {
       console.log("Login successful:", response.data);
       if (response.status === 200) {
         localStorage.setItem("userToken", response.data.token);
+        setIsloggendIn(true); // تحديث حالة تسجيل الدخول
   
         if (response.status === 200) {
         toast.success('Login was successfully !', {
