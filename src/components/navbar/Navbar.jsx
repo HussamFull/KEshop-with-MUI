@@ -15,6 +15,13 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { Link, Links } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { ThemeContext } from '../../context/ThemeContext';
+import { useContext } from 'react';
+import { DarkMode } from '@mui/icons-material';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';  
+
+
 
 // الألوان الجديدة من لوحة الألوان
 const colors = {
@@ -30,6 +37,8 @@ export default function Navbar({ IsloggendIn, setIsloggendIn }) {
     const [anchorElNav, setAnchorElNav] = useState(null); 
     const [anchorElUser, setAnchorElUser] = useState(null);
     const navigate = useNavigate();
+
+    const {mode, toggleTheme} = useContext(ThemeContext);
 
     const handleLogout = () => {
         localStorage.removeItem("userToken");
@@ -212,6 +221,10 @@ export default function Navbar({ IsloggendIn, setIsloggendIn }) {
                             )
                         }
                     </Box>
+
+                    <IconButton sx={{ ml: 1 }} onClick={toggleTheme} color="inherit">
+                        {mode === 'dark' ? <DarkModeIcon/> : <LightModeIcon/>}
+                    </IconButton>
 
                     {/* -------------------- قائمة إعدادات المستخدم (User Settings) -------------------- */}
                     <Box sx={{ flexGrow: 0 }}>
