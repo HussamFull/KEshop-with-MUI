@@ -14,6 +14,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import pattern from './pattern.svg';
 import AxiosInstanse from "../../api/AxiosInstanse";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 
 
@@ -105,6 +106,7 @@ const sliderCategories = [
 
 
 export default function Category() {
+ const { t, i18n } = useTranslation(); 
   const [activeSlide, setActiveSlide] = React.useState(0);
 
   const fetchCategories = async () => {
@@ -253,7 +255,7 @@ export default function Category() {
         <Box sx={{ py: 8, bgcolor: colors.goldenWheatFaint }}>
           <Container maxWidth="lg">
             <Typography variant="h4" component="h2" align="center" gutterBottom sx={{ mb: 5, fontWeight: 700, color: colors.deepUmber }}>
-              All Categories
+              {t("Categories")}   
             </Typography>
           </Container>
 

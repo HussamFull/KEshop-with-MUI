@@ -27,6 +27,7 @@ import { Slide, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AxiosInstanse from "../../api/AxiosInstanse";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 // Updated Color Palette
 const colors = {
@@ -85,6 +86,8 @@ const truncateName = (name, limit) => {
 };
 
 export default function Product() {
+    const { t, i18n } = useTranslation(); 
+  
   const navigate = useNavigate();
 
   // نقل هذه الـ Hooks إلى أعلى المكون
@@ -391,7 +394,7 @@ export default function Product() {
               gutterBottom
               sx={{ mb: 6, fontWeight: 700, color: colors.deepUmber }}
             >
-              All Products
+              {t("Products")} 
             </Typography>
             <Grid container spacing={4} justifyContent="center">
               {productsToDisplay.map((product) => (
@@ -499,7 +502,7 @@ export default function Product() {
                             fontWeight: "bold",
                           }}
                         >
-                          Quantity: {product.quantity}
+                          {t("Quantity")}: {product.quantity}
                         </Box>
                       </Box>
                     </CardContent>
@@ -522,7 +525,7 @@ export default function Product() {
                           },
                         }}
                       >
-                        Add to Cart
+                        {t("Add to Cart")}
                       </Button>
                       <Button
                         variant="outlined"
@@ -542,7 +545,7 @@ export default function Product() {
                         component={Link}
                         to={`/product/${product.id}`}
                       >
-                        Details
+                         {t("Details")}
                       </Button>
                     </CardActions>
                   </Card>

@@ -23,6 +23,7 @@ import AxiosUserInstanse from "../../api/AxiosUserInstanse";
 import { Slide, toast } from "react-toastify";
 import AxiosInstanse from "../../api/AxiosInstanse";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 // 🎨 Updated Color Palette
 const colors = {
@@ -55,6 +56,8 @@ const theme = createTheme({
 });
 
 export default function ProductDetails() {
+   const { t, i18n } = useTranslation(); 
+  
   const { id } = useParams();
   const [tabValue, setTabValue] = useState(0);
   const navigate = useNavigate(); // هنا يتم تعريف useNavigate
@@ -281,13 +284,13 @@ export default function ProductDetails() {
                         variant="body2"
                         sx={{ color: colors.charcoal }}
                       >
-                        Quantity: <Chip label={data.data.quantity} />
+                       {t("Quantity")} : <Chip label={data.data.quantity} />
                       </Typography>
                       <Typography component={"p"} variant="body1">
-                        Category: <Chip label={data.data.categoryName} />
+                       {t("Category")} : <Chip label={data.data.categoryName} />
                       </Typography>
                       <Typography component={"p"} variant="body1">
-                        Brand: <Chip label={data.data.brandName} />
+                       {t("Brand")} : <Chip label={data.data.brandName} />
                       </Typography>
                     </Box>
                     <motion.div whileHover={{ scale: 1.05 }}>
@@ -308,7 +311,7 @@ export default function ProductDetails() {
                         }}
                         onClick={() => addToCart(data.data.id)}
                       >
-                        Add to Cart
+                           {t("Add to Cart")}
                       </Button>
                     </motion.div>
                   </motion.div>
@@ -334,9 +337,9 @@ export default function ProductDetails() {
                 centered
                 sx={{ mb: 3 }}
               >
-                <Tab label="Details" />
-                <Tab label="Reviews" />
-                <Tab label="Shipping" />
+                <Tab label={t("Details")} />
+                <Tab label={t("Reviews")} />
+                <Tab label={t("Shipping")} />
               </Tabs>
               {tabValue === 0 && (
                 <Typography variant="body1">

@@ -11,6 +11,7 @@ import pattern from "./pattern.svg";
 import axios from "axios";
 import AxiosInstanse from "../../api/AxiosInstanse";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 // Updated Color Palette
 const colors = {
@@ -70,6 +71,8 @@ const theme = createTheme({
 });
 
 export default function Brand() {
+    const { t, i18n } = useTranslation(); 
+  
   const fetchBrands = async () => {
     const response = await AxiosInstanse.get("/Brands");
     return response;
@@ -152,7 +155,7 @@ export default function Brand() {
               gutterBottom
               sx={{ mb: 5, fontWeight: 700, color: colors.deepUmber }}
             >
-              All Brands
+              {t("Brands")} 
             </Typography>
           </Container>
 

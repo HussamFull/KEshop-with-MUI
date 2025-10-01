@@ -28,5 +28,35 @@
     "Shop": "Shop",
     "Discover a world of unique products and brands.": "Discover a world of unique products and brands.",
     "Shop confidently with our seamless and secure online experience.": "Shop confidently with our seamless and secure online experience.",
-    "All rights reserved.": "All rights reserved."
+    "All rights reserved.": "All rights reserved.",
+        "Language": "Language",
+      "Quantity": "Quantity",
+          "Category": "Category",
+          "Brand": "Brand",
+          "Add to Cart": "Add to Cart",
+          "Details": "Details",
+          "Reviews": "Reviews",
+          "Shipping": "Shipping",
+
+          "Your Collection": "Your Collection",
+            "Review the exquisite items you've chosen.": "Review the exquisite items you've chosen.",
+            "Your cart is currently a blank canvas.": "Your cart is currently a blank canvas.",
+            "Clear Cart": "Clear Cart",
+            "Order Summary": "Order Summary",
+            "Subtotal:": "Subtotal:",
+            "Shipping:": "Shipping:",
+            "Total:": "Total:",
+            "Proceed to Checkout": "Proceed to Checkout",
+            "Continue Shopping": "Continue Shopping",
+
+            "Failed to load cart.": "Failed to load cart.",
+            "Failed to remove item from cart.": "Failed to remove item from cart.",
+            "Failed to clear cart.": "Failed to clear cart.",
+            "Failed to increment item quantity.": "Failed to increment item quantity.",
+            "Failed to decrement item quantity.": "Failed to decrement item quantity.",
+            "Are you sure you want to remove this product?": "Are you sure you want to remove this product?",
+            "Are you sure you want to All remove this products?": "Are you sure you want to remove all products?",
+            "Product removed successfully !": "Product removed successfully!",
+            "All Product removed successfully !": "All products removed successfully!"
+      
 }

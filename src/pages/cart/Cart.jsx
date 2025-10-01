@@ -16,6 +16,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { toast, Slide } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useTranslation } from "react-i18next";
 // ❌ إزالة هذا الجزء، يجب أن يتم حساب الإجمالي في الـ JSX أو بعد تحميل البيانات
 // const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 // const shipping = 25;
@@ -54,6 +55,10 @@ const theme = createTheme({
 });
 
 export default function Cart() {
+
+const { t, i18n } = useTranslation(); 
+
+
   const navigate = useNavigate();
   // ✅ Solution: Initialize with a default object to avoid `undefined` errors
   const [carts, setCart] = useState({ items: [], cartTotal: 0 });
@@ -90,7 +95,7 @@ export default function Cart() {
 
   const removeItem = async (productId) => {
       // 1. إضافة التأكيد قبل عملية الحذف
-    const isConfirmed = window.confirm("Are you sure you want to remove this product?");
+const isConfirmed = window.confirm(t("Are you sure you want to remove this product?"));
     if (!isConfirmed) {
       // إذا لم يؤكد المستخدم، يتم إنهاء الفانكشن
       return;
@@ -110,7 +115,7 @@ export default function Cart() {
             }
         );
       if (response.status === 200) {
-        toast.success('Product removed successfully !', {
+       toast.success(t('Product removed successfully !'), {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -127,7 +132,7 @@ export default function Cart() {
        
     } catch (error) {
       console.error("Failed to remove item:", error);
-      setError("❌ Failed to remove item from cart.");
+      setError(`❌ ${t("Failed to remove item from cart.")}`);
     } finally {
       setLoading(false);
     }
@@ -135,7 +140,7 @@ export default function Cart() {
 
   const clearCart = async () => {
     // 1. إضافة التأكيد قبل عملية الحذف
-    const isConfirmed = window.confirm("Are you sure you want to All remove this products?");
+    const isConfirmed = window.confirm(t("Are you sure you want to All remove this products?"));
     if (!isConfirmed) {
       // إذا لم يؤكد المستخدم، يتم إنهاء الفانكشن
       return;
@@ -167,7 +172,7 @@ export default function Cart() {
       }
       getCart();
     } catch (error) {
-      setError("❌ Failed to clear cart.");
+      setError(`❌ ${t("Failed to clear cart.")}`);
     } finally {
       setLoading(false);
     }
@@ -189,7 +194,7 @@ export default function Cart() {
       );
       getCart();
     } catch (error) {
-      setError("❌ Failed to increment item quantity.");
+      setError(`❌ ${t("Failed to increment item quantity.")}`);
     } finally {
       setLoading(false);
     }
@@ -225,7 +230,7 @@ export default function Cart() {
       }
     } catch (error) {
       console.error("Error decrementing item:", error);
-      setError("❌ Failed to decrement item quantity.");
+      setError(`❌ ${t("Failed to decrement item quantity.")}`);
     } finally {
       setLoading(false);
     }
@@ -257,7 +262,7 @@ export default function Cart() {
     <ThemeProvider theme={theme}>
       <Box
         sx={{
-          direction: "ltr",
+         // direction: i18n.dir(), 
           bgcolor: colors.goldenWheatFaint,
           minHeight: "100vh",
           py: { xs: 4, md: 8 },
@@ -273,10 +278,10 @@ export default function Cart() {
             }}
           >
             <Typography variant="h2" component="h1" sx={{ fontWeight: 700, color: colors.deepUmber, textTransform: "uppercase" }}>
-              Your Collection
+             {t("Your Collection")} 
             </Typography>
             <Typography variant="body1" sx={{ mt: 1, color: colors.charcoal }}>
-              Review the exquisite items you've chosen.
+              {t("Review the exquisite items you've chosen.")}
             </Typography>
           </Box>
           <Grid container spacing={4} justifyContent="space-between" alignItems="flex-start" direction={{ xs: "column", md: "row" }} wrap="nowrap">
@@ -284,7 +289,7 @@ export default function Cart() {
               <Box sx={{ p: { xs: 2, md: 4 }, bgcolor: "background.paper", borderRadius: 3, boxShadow: "0 8px 30px rgba(0,0,0,0.08)" }}>
                 {carts.items.length === 0 ? (
                   <Typography variant="body1" align="center" sx={{ py: 4, color: colors.charcoal }}>
-                    Your cart is currently a blank canvas.
+                     {t("Your cart is currently a blank canvas.")}
                   </Typography>
                 ) : (
                   carts.items.map((item) => (
@@ -362,7 +367,7 @@ export default function Cart() {
                         },
                       }}
                     >
-                      Clear Cart
+                        {t("Clear Cart")}
                     </Button>
                   </Box>
                 )}
@@ -371,12 +376,12 @@ export default function Cart() {
             <Grid item xs={12} md={5} sx={{ minWidth: 0 }}>
               <Box sx={{ p: { xs: 2, md: 4 }, bgcolor: colors.deepUmber, borderRadius: 3, boxShadow: "0 8px 30px rgba(0,0,0,0.1)", color: colors.goldenWheatFaint }}>
                 <Typography variant="h4" gutterBottom sx={{ mb: 4, fontWeight: "bold", color: colors.goldenWheat, borderBottom: `2px solid ${colors.goldenWheat}`, pb: 1 }}>
-                  Order Summary
+                  {t("Order Summary")}
                 </Typography>
                 <Box sx={{ mb: 2 }}>
                   <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
                     <Typography variant="body1" sx={{ color: colors.grey }}>
-                      Subtotal:
+                       {t("Subtotal:")}
                     </Typography>
                     <Typography variant="body1" sx={{ fontWeight: "bold" }}>
                       {/* ✅ Correct way to display cart totals */}
@@ -385,7 +390,7 @@ export default function Cart() {
                   </Box>
                   <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
                     <Typography variant="body1" sx={{ color: colors.grey }}>
-                      Shipping:
+                     {t("Shipping:")}
                     </Typography>
                     <Typography variant="body1" sx={{ fontWeight: "bold" }}>
                       {carts.shippingCost} SAR
@@ -393,7 +398,7 @@ export default function Cart() {
                   </Box>
                   <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4, alignItems: "baseline" }}>
                     <Typography variant="h5" sx={{ fontWeight: "bold", color: colors.goldenWheat }}>
-                      Total:
+                     {t("Total:")}
                     </Typography>
                     <Typography variant="h5" sx={{ fontWeight: "bold", color: colors.goldenWheat }}>
                       {carts.cartTotal} SAR
@@ -401,10 +406,10 @@ export default function Cart() {
                   </Box>
                 </Box>
                 <Button variant="contained" fullWidth size="large" sx={{ mt: 3, bgcolor: colors.goldenWheat, color: colors.deepUmber, py: 1.5, fontSize: "1.1rem", fontWeight: "bold", borderRadius: "50px", transition: "transform 0.3s ease, box-shadow 0.3s ease", "&:hover": { bgcolor: colors.goldenWheatFaint, boxShadow: "0px 8px 20px rgba(152, 133, 97, 0.3)", transform: "translateY(-3px)" } }}>
-                  Proceed to Checkout
+                    {t("Proceed to Checkout")}
                 </Button>
                 <Button variant="outlined" fullWidth size="large" sx={{ mt: 2, borderColor: colors.goldenWheatFaint, color: colors.goldenWheatFaint, py: 1.5, fontSize: "1.1rem", fontWeight: "bold", borderRadius: "50px", transition: "color 0.3s ease, background-color 0.3s ease", "&:hover": { bgcolor: colors.goldenWheatFaint, color: colors.deepUmber } }}>
-                  Continue Shopping
+                  {t("Continue Shopping")}
                 </Button>
               </Box>
             </Grid>

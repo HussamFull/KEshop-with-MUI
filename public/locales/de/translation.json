@@ -28,5 +28,35 @@
     "Shop": "Shop",
     "Discover a world of unique products and brands.": "Entdecken Sie eine Welt einzigartiger Produkte und Marken.",
     "Shop confidently with our seamless and secure online experience.": "Kaufen Sie selbstbewusst mit unserem nahtlosen und sicheren Online-Erlebnis ein.",
-    "All rights reserved.": "Alle Rechte vorbehalten."
+    "All rights reserved.": "Alle Rechte vorbehalten.",
+        "Language": "Sprache",
+         "Quantity": "Menge",
+          "Category": "Kategorie",
+          "Brand": "Marke",
+          "Add to Cart": "In den Warenkorb",
+          "Details": "Details",
+          "Reviews": "Bewertungen",   
+          "Shipping": "Versand",
+            "Your Collection": "Ihr Warenkorb",
+            "Review the exquisite items you've chosen.": "Überprüfen Sie die ausgewählten Artikel sorgfältig.",
+            "Your cart is currently a blank canvas.": "Ihr Warenkorb ist derzeit leer.",
+            "Clear Cart": "Warenkorb leeren",
+            "Order Summary": "Bestellübersicht",
+            "Subtotal:": "Zwischensumme:",
+            "Shipping:": "Versand:",
+            "Total:": "Gesamt:",
+            "Proceed to Checkout": "Zur Kasse gehen",
+            "Continue Shopping": "Weiter einkaufen",
+
+            "Failed to load cart.": "❌ Warenkorb konnte nicht geladen werden.",
+            "Failed to remove item from cart.": "❌ Artikel konnte nicht aus dem Warenkorb entfernt werden.",
+            "Failed to clear cart.": "❌ Warenkorb konnte nicht geleert werden.",
+            "Failed to increment item quantity.": "❌ Menge konnte nicht erhöht werden.",
+            "Failed to decrement item quantity.": "❌ Menge konnte nicht reduziert werden.",
+            "Are you sure you want to remove this product?": "Möchten Sie dieses Produkt wirklich entfernen?",
+            "Are you sure you want to All remove this products?": "Möchten Sie wirklich alle Produkte entfernen?",
+            "Product removed successfully !": "Produkt erfolgreich entfernt!",
+            "All Product removed successfully !": "Alle Produkte erfolgreich entfernt!"
+       
+
 }
