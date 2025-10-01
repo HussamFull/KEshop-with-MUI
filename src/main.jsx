@@ -10,10 +10,9 @@ import '@fontsource/roboto/700.css';
 import './index.css'
   import { ToastContainer, toast } from 'react-toastify';
   import 'react-toastify/dist/ReactToastify.css';
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import theme from './Theme.jsx';
+
 import ThemeContextProvider from './context/ThemeContext.jsx';
+import './I18n.jsx';
 
 
 createRoot(document.getElementById('root')).render(

@@ -20,6 +20,7 @@ import { useContext } from 'react';
 import { DarkMode } from '@mui/icons-material';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';  
+import { useTranslation } from 'react-i18next';
 
 
 
@@ -33,6 +34,11 @@ const colors = {
 
 // تم تعديل تعريف الدالة لاستقبال IsloggendIn و setIsloggendIn كـ props
 export default function Navbar({ IsloggendIn, setIsloggendIn }) { 
+
+    const {t } = useTranslation();
+
+
+
     // **التصحيح: استخدام useState مباشرة**
     const [anchorElNav, setAnchorElNav] = useState(null); 
     const [anchorElUser, setAnchorElUser] = useState(null);
@@ -114,34 +120,34 @@ export default function Navbar({ IsloggendIn, setIsloggendIn }) {
                             
                             {/* روابط ثابتة */}
                             <MenuItem onClick={handleCloseNavMenu} component={Link} to="/">
-                                <Typography sx={{ textAlign: 'center' }}>Home</Typography>
+                                <Typography sx={{ textAlign: 'center' }}> {t("Home")} </Typography>
                             </MenuItem>
                             <MenuItem onClick={handleCloseNavMenu} component={Link} to="/Category">
-                                <Typography sx={{ textAlign: 'center' }}>Categorys</Typography>
+                                <Typography sx={{ textAlign: 'center' }}> {t("Categories")}</Typography>
                             </MenuItem>
                             <MenuItem onClick={handleCloseNavMenu} component={Link} to="/Product">
-                                <Typography sx={{ textAlign: 'center' }}>Products</Typography>
+                                <Typography sx={{ textAlign: 'center' }}>  {t("Products")}</Typography>
                             </MenuItem>
                             <MenuItem onClick={handleCloseNavMenu} component={Link} to="/brand">
-                                <Typography sx={{ textAlign: 'center' }}>Brands</Typography>
+                                <Typography sx={{ textAlign: 'center' }}>  {t("Brands")} </Typography>
                             </MenuItem>
 
                             {/* الروابط الشرطية للجوال - تم التخلص من Fragment */}
                             { IsloggendIn 
                                 ? [ // إذا كان مسجلاً للدخول
                                     <MenuItem key="cart-m" onClick={handleCloseNavMenu} component={Link} to="/cart">
-                                        <Typography sx={{ textAlign: 'center' }}>Cart</Typography>
+                                        <Typography sx={{ textAlign: 'center' }}>  {t("Cart")} </Typography>
                                     </MenuItem>,
                                     <MenuItem key="logout-m" onClick={handleLogout} >
-                                        <Typography sx={{ textAlign: 'center' }}>Logout</Typography>
+                                        <Typography sx={{ textAlign: 'center' }}>  {t("Logout")} </Typography>
                                     </MenuItem>
                                 ] 
                                 : [ // إذا لم يكن مسجلاً للدخول
                                     <MenuItem key="register-m" onClick={handleCloseNavMenu} component={Link} to="/register">
-                                        <Typography sx={{ textAlign: 'center' }}>Register</Typography>
+                                        <Typography sx={{ textAlign: 'center' }}>  {t("Register")} </Typography>
                                     </MenuItem>,
                                     <MenuItem key="login-m" onClick={handleCloseNavMenu} component={Link} to="/login">
-                                        <Typography sx={{ textAlign: 'center' }}>Login</Typography>
+                                        <Typography sx={{ textAlign: 'center' }}>  {t("Login")}</Typography>
                                     </MenuItem>
                                 ] 
                             }
@@ -179,16 +185,16 @@ export default function Navbar({ IsloggendIn, setIsloggendIn }) {
                     >
                         
                         <Button onClick={handleCloseNavMenu} sx={{ my: 2, color: colors.goldenWheat, display: 'block' }} component={Link} to="/">
-                            Home
+                             {t("Home")}
                         </Button>
                         <Button onClick={handleCloseNavMenu} sx={{ my: 2, color: colors.goldenWheat, display: 'block' }} component={Link} to="/Category">
-                            Categorys
+                             {t("Categories")}
                         </Button>
                         <Button onClick={handleCloseNavMenu} sx={{ my: 2, color: colors.goldenWheat, display: 'block' }} component={Link} to="/Product">
-                            Products
+                              {t("Products")} 
                         </Button>
                         <Button onClick={handleCloseNavMenu} sx={{ my: 2, color: colors.goldenWheat, display: 'block' }} component={Link} to="/brand">
-                            Brands
+                             {t("Brands")} 
                         </Button>
 
                         {/* الروابط الشرطية للديسكتوب */}
@@ -196,7 +202,7 @@ export default function Navbar({ IsloggendIn, setIsloggendIn }) {
                             ? ( // إذا كان مسجلاً للدخول (LoggedIn)
                                 <>
                                     <Button onClick={handleCloseNavMenu} sx={{ my: 2, color: colors.goldenWheat, display: 'block' }} component={Link} to="/cart">
-                                        Cart
+                                         {t("Cart")}
                                     </Button>
                                     <Button
                                         onClick={() => {
@@ -205,17 +211,17 @@ export default function Navbar({ IsloggendIn, setIsloggendIn }) {
                                         }}
                                         sx={{ my: 2, color: colors.goldenWheat, display: 'block' }}
                                     >
-                                        Logout
+                                        {t("Logout")} 
                                     </Button>
                                 </>
                             )
                             : ( // إذا لم يكن مسجلاً للدخول (LoggedOut)
                                 <>
                                     <Button onClick={handleCloseNavMenu} sx={{ my: 2, color: colors.goldenWheat, display: 'block' }} component={Link} to="/register">
-                                        Register
+                                         {t("Register")} 
                                     </Button>
                                     <Button onClick={handleCloseNavMenu} sx={{ my: 2, color: colors.goldenWheat, display: 'block' }} component={Link} to="/login">
-                                        Login
+                                          {t("Login")} 
                                     </Button>
                                 </>
                             )
@@ -249,17 +255,17 @@ export default function Navbar({ IsloggendIn, setIsloggendIn }) {
                                 >
                                     
                                     <MenuItem onClick={handleCloseUserMenu} component={Link} to="/Profile">
-                                        <Typography sx={{ textAlign: 'center' }}>Profile</Typography>
+                                        <Typography sx={{ textAlign: 'center' }}>{t("Profile")}</Typography>
                                     </MenuItem>
                                     <MenuItem onClick={handleCloseUserMenu} component={Link} to="/Account">
-                                        <Typography sx={{ textAlign: 'center' }}>Account</Typography>
+                                        <Typography sx={{ textAlign: 'center' }}>{t("Account")}</Typography>
                                     </MenuItem>
                                     <MenuItem onClick={handleCloseUserMenu} component={Link} to="/Dashboard">
-                                        <Typography sx={{ textAlign: 'center' }}>Dashboard</Typography>
+                                        <Typography sx={{ textAlign: 'center' }}>{t("Dashboard")}</Typography>
                                     </MenuItem>
                                     {/* زر تسجيل الخروج في قائمة الإعدادات */}
                                     <MenuItem onClick={handleLogout} >
-                                        <Typography sx={{ textAlign: 'center' }}>Logout</Typography>
+                                        <Typography sx={{ textAlign: 'center' }}> {t("Logout")} </Typography>
                                     </MenuItem>
                                 </Menu>
                             </>
