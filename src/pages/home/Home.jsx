@@ -17,6 +17,8 @@ import {
 import pattern from './pattern.svg'; // تأكد من المسار الصحيح لصورة الخلفية
 import Category from '../Category/Category';
 import Product from '../Product/Product';
+import { useTranslation } from 'react-i18next';
+
 
 // الألوان الجديدة من لوحة الألوان
 const colors = {
@@ -91,6 +93,8 @@ const featuredProducts = [
 ];
 
 export default function Home() {
+  const { t } = useTranslation(); 
+
   const theme = useTheme();
 
   return (
@@ -129,9 +133,9 @@ export default function Home() {
                 >
                   <Container sx={{ position: 'relative', zIndex: 2 }}>
                     <Typography variant="h1" gutterBottom sx={{ fontWeight: 700, fontSize: { xs: '2.5rem', md: '5rem' } }}>
-Heritage in a modern painting                    </Typography>
+{t("Heritage in a modern painting")}                    </Typography>
                     <Typography variant="h5" sx={{ mb: 4, color: colors.grey, maxWidth: '600px', mx: 'auto' }}>
-We offer you a unique blend of Syrian authenticity and modern design, where the past meets the present.                    </Typography>
+{t("We offer you a unique blend of Syrian authenticity and modern design, where the past meets the present")}                    </Typography>
                     <Button
                       variant="contained"
                       size="large"
@@ -150,7 +154,8 @@ We offer you a unique blend of Syrian authenticity and modern design, where the 
                         },
                       }}
                     >
-Discover our collection now                    </Button>
+
+{t("Discover our collection now")}                   </Button>
 
                     
 
