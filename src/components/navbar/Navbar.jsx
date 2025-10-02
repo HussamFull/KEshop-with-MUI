@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -22,6 +22,8 @@ import LightModeIcon from '@mui/icons-material/LightMode';  
 import LanguageIcon from '@mui/icons-material/Language'; // **استيراد أيقونة اللغة**
 import { useTranslation } from 'react-i18next'; // **استيراد useTranslation**
 import { useMediaQuery, useTheme } from '@mui/material'; // **مكونات إضافية للاستجابة**
+import i18next from 'i18next';
+import { createTheme, ThemeProvider } from '@mui/material';
 
 
 // الألوان الجديدة من لوحة الألوان
@@ -38,6 +40,11 @@ export default function Navbar({ IsloggendIn, setIsloggendIn }) {
     // **استخدام i18n من useTranslation لتغيير اللغة**
     const { t, i18n } = useTranslation(); 
 
+    const {lang , setLang} = useState(i18next.language);
+// قراءة الاتجاه الحالي مباشرة من i18next
+const currentDirection = i18next.dir(lang); 
+
+
     // حالة القائمة: الروابط، والمستخدم، واللغة
     const [anchorElNav, setAnchorElNav] = useState(null); 
     const [anchorElUser, setAnchorElUser] = useState(null);
@@ -49,10 +56,14 @@ export default function Navbar({ IsloggendIn, setIsloggendIn }) {
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
     // دالة تغيير اللغة
-    const handleChangeLanguage = (lang) => {
-        i18n.changeLanguage(lang);
-        setAnchorElLang(null); // إغلاق القائمة بعد الاختيار
-    };
+const handleChangeLanguage = (langCode) => {
+    // 1. تغيير لغة i18next إلى رمز اللغة (langCode) الذي تم تمريره
+    i18next.changeLanguage(langCode);
+    // 2. تحديث حالة اللغة
+    setLang(langCode);
+    // 3. إغلاق القائمة بعد الاختيار (بافتراض أن هذه هي الوظيفة الأصلية لـ setAnchorElLang)
+    setAnchorElLang(null); 
+};
 
     // دوال فتح وإغلاق القوائم
     const handleLogout = () => {
@@ -90,12 +101,48 @@ export default function Navbar({ IsloggendIn, setIsloggendIn }) {
     const availableLanguages = [
         { code: 'en', name: 'English' },
         { code: 'ar', name: 'العربية' },
-       
         { code: 'de', name: 'Deutsch' },
     ];
 
+    useEffect(() => {
+        window.document.dir = i18next.dir();
+      }, [lang]);
+
+      // قراءة الاتجاه الحالي مباشرة من i18next
+    
+    // إنشاء ثيم جديد يحدد اتجاهه. هذا سيجعل مكونات MUI مثل Toolbar تعكس ترتيبها.
+    const themeWithDirection = createTheme({
+        direction: currentDirection, // هنا يتم تحديد اتجاه الثيم
+        palette: {
+            mode, // الحفاظ على وضع الثيم (Dark/Light)
+        },
+        // يمكنك هنا إضافة أي تعديلات أخرى على الثيم
+        components: {
+            MuiAppBar: {
+                styleOverrides: {
+                    root: {
+                        // في بعض الحالات، قد تحتاج إلى هذا الإعداد أيضاً
+                        direction: currentDirection, 
+                    },
+                },
+            },
+            MuiToolbar: {
+                 styleOverrides: {
+                    root: {
+                        // التأكد من تطبيق الاتجاه على شريط الأدوات
+                        direction: currentDirection, 
+                    },
+                },
+            },
+        }
+    });
+
 
     return (
+     <ThemeProvider theme={themeWithDirection}>
+
+
+   
         <AppBar position="static" sx={{ bgcolor: colors.forest }}>
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
@@ -350,5 +397,6 @@ export default function Navbar({ IsloggendIn, setIsloggendIn }) {
                 </Toolbar>
             </Container>
         </AppBar>
+  </ThemeProvider>
     );
 }

@@ -17,6 +17,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { toast, Slide } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useTranslation } from "react-i18next";
+import i18next from "i18next";
 // ❌ إزالة هذا الجزء، يجب أن يتم حساب الإجمالي في الـ JSX أو بعد تحميل البيانات
 // const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 // const shipping = 25;
@@ -35,28 +36,11 @@ const colors = {
 };
 
 // Custom Material-UI Theme
-const theme = createTheme({
-  direction: "ltr",
-  typography: {
-    fontFamily: ["Qomra typeface", "Arial", "sans-serif"].join(","),
-    h1: { fontFamily: "Qomra typeface", color: colors.deepUmber },
-    h2: { fontFamily: "Qomra typeface", color: colors.deepUmber },
-    h4: { fontFamily: "Qomra typeface", color: colors.deepUmber },
-    h5: { fontFamily: "Qomra typeface", color: colors.deepUmber },
-    h6: { color: colors.deepUmber },
-    body1: { color: colors.charcoal },
-    body2: { color: colors.grey },
-  },
-  palette: {
-    primary: { main: colors.deepUmber },
-    secondary: { main: colors.goldenWheat },
-    background: { default: colors.goldenWheatFaint, paper: colors.white },
-  },
-});
 
 export default function Cart() {
 
-const { t, i18n } = useTranslation(); 
+const { t } = useTranslation(); 
+const [lang , setLang] = useState(i18next.language) 
 
 
   const navigate = useNavigate();
@@ -64,6 +48,55 @@ const { t, i18n } = useTranslation();
   const [carts, setCart] = useState({ items: [], cartTotal: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  
+  // تحديث اتجاه الصفحة عند تغيير اللغة
+  // _______________________________________________
+    // ** 🛠️ الخطوة 1: إنشاء الثيم داخل المكون ليتجاوب مع حالة اللغة (lang) **
+    
+    const currentDirection = i18next.dir(lang);
+
+    const dynamicTheme = createTheme({
+        // ✅ إضافة الاتجاه هنا لتحديد ترتيب الـ Flexbox والتنسيقات الأخرى في MUI
+        direction: currentDirection, 
+        typography: {
+            fontFamily: ["Qomra typeface", "Arial", "sans-serif"].join(","),
+            h1: { fontFamily: "Qomra typeface", color: colors.deepUmber },
+            h2: { fontFamily: "Qomra typeface", color: colors.deepUmber },
+            h4: { fontFamily: "Qomra typeface", color: colors.deepUmber },
+            h5: { fontFamily: "Qomra typeface", color: colors.deepUmber },
+            h6: { color: colors.deepUmber },
+            body1: { color: colors.charcoal },
+            body2: { color: colors.grey },
+        },
+        palette: {
+            primary: { main: colors.deepUmber },
+            secondary: { main: colors.goldenWheat },
+            background: { default: colors.goldenWheatFaint, paper: colors.white },
+        },
+        // ** (اختياري) إضافة overrides لضمان تطبيق الاتجاه على أي قوائم منسدلة **
+        components: {
+            MuiPopover: {
+                defaultProps: {
+                    container: window.document.body,
+                },
+                styleOverrides: {
+                    root: {
+                        direction: currentDirection,
+                    },
+                },
+            },
+            MuiDialog: {
+                styleOverrides: {
+                    root: {
+                        direction: currentDirection,
+                    },
+                },
+            },
+        },
+    });
+
+
 
   // 🛠️ Fetch Cart Data - Fixed and Robust
   const getCart = async () => {
@@ -82,6 +115,8 @@ const { t, i18n } = useTranslation();
         }
       );
       setCart(response.data);
+       setLang(i18next.language); 
+
     } catch (error) {
       console.error("Failed to load cart data:", error);
       if (error.response && error.response.status === 401) {
@@ -236,9 +271,12 @@ const isConfirmed = window.confirm(t("Are you sure you want to remove this produ
     }
   };
 
+
+
   useEffect(() => {
+    window.document.dir = i18next.dir();
     getCart();
-  }, []);
+  }, [lang]);
 
   if (loading) {
     return (
@@ -259,10 +297,10 @@ const isConfirmed = window.confirm(t("Are you sure you want to remove this produ
   }
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={dynamicTheme}>
       <Box
         sx={{
-         // direction: i18n.dir(), 
+          direction: i18next.dir(), 
           bgcolor: colors.goldenWheatFaint,
           minHeight: "100vh",
           py: { xs: 4, md: 8 },
@@ -284,7 +322,12 @@ const isConfirmed = window.confirm(t("Are you sure you want to remove this produ
               {t("Review the exquisite items you've chosen.")}
             </Typography>
           </Box>
-          <Grid container spacing={4} justifyContent="space-between" alignItems="flex-start" direction={{ xs: "column", md: "row" }} wrap="nowrap">
+          <Grid container spacing={4} 
+            justifyContent="space-between" 
+           alignItems="flex-start" 
+            direction={{ xs: "column", md: "row" }}
+             wrap="nowrap"
+            >
             <Grid item xs={12} md={7} sx={{ minWidth: 0 }}>
               <Box sx={{ p: { xs: 2, md: 4 }, bgcolor: "background.paper", borderRadius: 3, boxShadow: "0 8px 30px rgba(0,0,0,0.08)" }}>
                 {carts.items.length === 0 ? (
