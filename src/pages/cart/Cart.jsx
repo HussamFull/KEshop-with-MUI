@@ -18,6 +18,9 @@ import { toast, Slide } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useTranslation } from "react-i18next";
 import i18next from "i18next";
+import AxiosUserInstanse from "../../api/AxiosUserInstanse";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 // ❌ إزالة هذا الجزء، يجب أن يتم حساب الإجمالي في الـ JSX أو بعد تحميل البيانات
 // const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
 // const shipping = 25;
@@ -41,6 +44,7 @@ export default function Cart() {
 
 const { t } = useTranslation(); 
 const [lang , setLang] = useState(i18next.language) 
+  const queryClient = useQueryClient();
 
 
   const navigate = useNavigate();
@@ -53,9 +57,7 @@ const [lang , setLang] = useState(i18next.language)
   // تحديث اتجاه الصفحة عند تغيير اللغة
   // _______________________________________________
     // ** 🛠️ الخطوة 1: إنشاء الثيم داخل المكون ليتجاوب مع حالة اللغة (lang) **
-    
     const currentDirection = i18next.dir(lang);
-
     const dynamicTheme = createTheme({
         // ✅ إضافة الاتجاه هنا لتحديد ترتيب الـ Flexbox والتنسيقات الأخرى في MUI
         direction: currentDirection, 
@@ -99,6 +101,19 @@ const [lang , setLang] = useState(i18next.language)
 
 
   // 🛠️ Fetch Cart Data - Fixed and Robust
+  
+  // جلب بيانات السلة (React Query) - Hook لا يجب وضعه داخل شرط
+  const fetchProducts = async () => {
+    const response = await AxiosUserInstanse.get('/Carts');
+    return response;
+  };
+
+  const { data, Error, isError, isLoading } = useQuery({
+    queryKey: ['cartItems'],
+    queryFn: fetchProducts,
+    staleTime: 5 * 60 * 1000,
+  });
+  {/* 
   const getCart = async () => {
     setLoading(true);
     setError(null);
@@ -127,7 +142,7 @@ const [lang , setLang] = useState(i18next.language)
       setLoading(false);
     }
   };
-
+*/}
   const removeItem = async (productId) => {
       // 1. إضافة التأكيد قبل عملية الحذف
 const isConfirmed = window.confirm(t("Are you sure you want to remove this product?"));
@@ -135,22 +150,9 @@ const isConfirmed = window.confirm(t("Are you sure you want to remove this produ
       // إذا لم يؤكد المستخدم، يتم إنهاء الفانكشن
       return;
     }
-    try {
-      const token = localStorage.getItem("userToken");
-      if (!token) {
-        navigate("/login");
-        return;
-      }
-      
-        // ✅ الحل: استخدام axios.delete وتوجيه الطلب للمسار الصحيح للحذف
-        const response = await axios.delete(
-            `https://kashop1.runasp.net/api/Customer/Carts/${productId}`,
-            {
-                headers: { Authorization: `Bearer ${token}` },
-            }
-        );
-      if (response.status === 200) {
-       toast.success(t('Product removed successfully !'), {
+ const response = await AxiosUserInstanse.delete(`/Carts/${productId}`);
+   if( response.status === 200){
+     toast.success(t('Product removed successfully !'), {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -161,16 +163,11 @@ const isConfirmed = window.confirm(t("Are you sure you want to remove this produ
           theme: "light",
           transition: Slide,
         });
-      }
-      // Reload the cart after removal
-      getCart();
+     // تحديث بيانات السلة بعد الإضافة
+        queryClient.invalidateQueries( ["cartItems"]);
+     };
        
-    } catch (error) {
-      console.error("Failed to remove item:", error);
-      setError(`❌ ${t("Failed to remove item from cart.")}`);
-    } finally {
-      setLoading(false);
-    }
+
   };
 
   const clearCart = async () => {
@@ -180,20 +177,9 @@ const isConfirmed = window.confirm(t("Are you sure you want to remove this produ
       // إذا لم يؤكد المستخدم، يتم إنهاء الفانكشن
       return;
     }
-    try {
-      const token = localStorage.getItem("userToken");
-      if (!token) {
-        navigate("/login");
-        return;
-      }
-       const response = await axios.delete(
-        `https://kashop1.runasp.net/api/Customer/Carts/clear`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-       if (response.status === 200) {
-        toast.success('All Product removed successfully !', {
+     const response = await AxiosUserInstanse.delete(`/Carts/clear`);
+   if( response.status === 200){
+     toast.success('All Product removed successfully !', {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -204,45 +190,32 @@ const isConfirmed = window.confirm(t("Are you sure you want to remove this produ
           theme: "light",
           transition: Slide,
         });
-      }
-      getCart();
-    } catch (error) {
-      setError(`❌ ${t("Failed to clear cart.")}`);
-    } finally {
-      setLoading(false);
-    }
+     // تحديث بيانات السلة بعد الإضافة
+        queryClient.invalidateQueries( ["cartItems"]);
+     };
+      
+     
+    
   };
 
   const incrementItem = async (productId) => {
-    try {
-      const token = localStorage.getItem("userToken");
-      if (!token) {
-        navigate("/login");
-        return;
-      }
-      await axios.post(
-        `https://kashop1.runasp.net/api/Customer/Carts/increment/${productId}`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      getCart();
-    } catch (error) {
-      setError(`❌ ${t("Failed to increment item quantity.")}`);
-    } finally {
-      setLoading(false);
-    }
+    const response = await AxiosUserInstanse.post(`/Carts/increment/${productId}`,{});
+   if( response.status === 200){
+     // تحديث بيانات السلة بعد الإضافة
+        queryClient.invalidateQueries( ["cartItems"]);
+     };
   };
 
   // 🛠️ Decrement Item Function - Corrected
   const decrementItem = async (productId) => {
-    try {
-      const token = localStorage.getItem("userToken");
-      if (!token) {
-        navigate("/login");
-        return;
-      }
+     const response = await AxiosUserInstanse.post(`/Carts/decrement/${productId}`,{});
+   if( response.status === 200){
+     // تحديث بيانات السلة بعد الإضافة
+        queryClient.invalidateQueries( ["cartItems"]);
+     };
+
+
+   
       // ✅ Solution: Check if 'carts' and 'carts.items' are defined first.
       if (!carts || !carts.items || carts.items.length === 0) {
         console.error("Cart data not available. Cannot decrement.");
@@ -253,32 +226,18 @@ const isConfirmed = window.confirm(t("Are you sure you want to remove this produ
 
       if (currentItem && currentItem.count === 1) {
         await removeItem(productId);
-      } else {
-        await axios.post(
-          `https://kashop1.runasp.net/api/Customer/Carts/decrement/${productId}`,
-          {},
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        getCart();
-      }
-    } catch (error) {
-      console.error("Error decrementing item:", error);
-      setError(`❌ ${t("Failed to decrement item quantity.")}`);
-    } finally {
-      setLoading(false);
-    }
+      } 
+       
   };
 
 
 
   useEffect(() => {
     window.document.dir = i18next.dir();
-    getCart();
+        queryClient.invalidateQueries( ["cartItems"]);
   }, [lang]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "80vh" }}>
         <CircularProgress />
@@ -286,7 +245,7 @@ const isConfirmed = window.confirm(t("Are you sure you want to remove this produ
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <Box sx={{ textAlign: "center", py: 8 }}>
         <Typography variant="h5" color="error">
@@ -330,12 +289,12 @@ const isConfirmed = window.confirm(t("Are you sure you want to remove this produ
             >
             <Grid item xs={12} md={7} sx={{ minWidth: 0 }}>
               <Box sx={{ p: { xs: 2, md: 4 }, bgcolor: "background.paper", borderRadius: 3, boxShadow: "0 8px 30px rgba(0,0,0,0.08)" }}>
-                {carts.items.length === 0 ? (
+                {data.data.items.length === 0 ? (
                   <Typography variant="body1" align="center" sx={{ py: 4, color: colors.charcoal }}>
                      {t("Your cart is currently a blank canvas.")}
                   </Typography>
                 ) : (
-                  carts.items.map((item) => (
+                  data.data.items.map((item) => (
                     <Box key={item.productId} // ✅ Solution: Use a unique `key` prop here
                       sx={{
                         display: "flex",
@@ -392,7 +351,7 @@ const isConfirmed = window.confirm(t("Are you sure you want to remove this produ
                     </Box>
                   ))
                 )}
-                {carts.items.length > 0 && (
+                {data.data.items.length > 0 && (
                   <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
                     <Button
                       variant="outlined"
@@ -428,7 +387,7 @@ const isConfirmed = window.confirm(t("Are you sure you want to remove this produ
                     </Typography>
                     <Typography variant="body1" sx={{ fontWeight: "bold" }}>
                       {/* ✅ Correct way to display cart totals */}
-                      {carts.cartSubTotal} SAR
+                      {data.data.cartSubTotal} SAR
                     </Typography>
                   </Box>
                   <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
@@ -436,7 +395,7 @@ const isConfirmed = window.confirm(t("Are you sure you want to remove this produ
                      {t("Shipping:")}
                     </Typography>
                     <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-                      {carts.shippingCost} SAR
+                      {data.data.shippingCost} SAR
                     </Typography>
                   </Box>
                   <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4, alignItems: "baseline" }}>
@@ -444,11 +403,11 @@ const isConfirmed = window.confirm(t("Are you sure you want to remove this produ
                      {t("Total:")}
                     </Typography>
                     <Typography variant="h5" sx={{ fontWeight: "bold", color: colors.goldenWheat }}>
-                      {carts.cartTotal} SAR
+                      {data.data.cartTotal} SAR
                     </Typography>
                   </Box>
                 </Box>
-                <Button variant="contained" fullWidth size="large" sx={{ mt: 3, bgcolor: colors.goldenWheat, color: colors.deepUmber, py: 1.5, fontSize: "1.1rem", fontWeight: "bold", borderRadius: "50px", transition: "transform 0.3s ease, box-shadow 0.3s ease", "&:hover": { bgcolor: colors.goldenWheatFaint, boxShadow: "0px 8px 20px rgba(152, 133, 97, 0.3)", transform: "translateY(-3px)" } }}>
+                <Button component={Link} to='/Checkout' variant="contained" fullWidth size="large" sx={{ mt: 3, bgcolor: colors.goldenWheat, color: colors.deepUmber, py: 1.5, fontSize: "1.1rem", fontWeight: "bold", borderRadius: "50px", transition: "transform 0.3s ease, box-shadow 0.3s ease", "&:hover": { bgcolor: colors.goldenWheatFaint, boxShadow: "0px 8px 20px rgba(152, 133, 97, 0.3)", transform: "translateY(-3px)" } }}>
                     {t("Proceed to Checkout")}
                 </Button>
                 <Button variant="outlined" fullWidth size="large" sx={{ mt: 2, borderColor: colors.goldenWheatFaint, color: colors.goldenWheatFaint, py: 1.5, fontSize: "1.1rem", fontWeight: "bold", borderRadius: "50px", transition: "color 0.3s ease, background-color 0.3s ease", "&:hover": { bgcolor: colors.goldenWheatFaint, color: colors.deepUmber } }}>

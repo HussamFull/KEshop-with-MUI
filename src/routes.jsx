@@ -20,6 +20,8 @@ import Brands from "./pages/admin/Brands";
 import Products from "./pages/admin/Products";
 import Users from "./pages/admin/Users";
 import ResetPassword from './pages/auth/ResetPassword';
+import Checkout from './pages/checkout/Checkout';
+import PaymentSuccess from './pages/checkout/PaymentSuccess';
 
 
 
@@ -52,7 +54,14 @@ const router = createBrowserRouter([
                 element: <ResetPassword />,
             },
 
-
+ {
+                path: "/Checkout",
+                element: <Checkout />,
+            },
+            {
+                path: path="/customer/CheckOut/success/:orderId",
+                element: <PaymentSuccess />,
+            },
 
             
             {

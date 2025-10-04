@@ -22,7 +22,7 @@ import { motion } from "framer-motion";
 import AxiosUserInstanse from "../../api/AxiosUserInstanse";
 import { Slide, toast } from "react-toastify";
 import AxiosInstanse from "../../api/AxiosInstanse";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
 // 🎨 Updated Color Palette
@@ -59,6 +59,7 @@ export default function ProductDetails() {
    const { t, i18n } = useTranslation(); 
   
   const { id } = useParams();
+  const queryClient = useQueryClient();
   const [tabValue, setTabValue] = useState(0);
   const navigate = useNavigate(); // هنا يتم تعريف useNavigate
   //const [product, setProduct] = useState({});
@@ -98,6 +99,29 @@ export default function ProductDetails() {
 
   // 🛒 Add to Cart Function
   const addToCart = async (id) => {
+    
+      const response = await AxiosUserInstanse.post(`/Carts`, {
+        productId: id,
+      });
+
+      if (response.status === 200) {
+        toast.success("Product added to cart successfully !", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Slide,
+        });
+        // تحديث بيانات السلة بعد الإضافة
+        queryClient.invalidateQueries( ["cartItems"]);
+
+      }
+  }
+    {/* 
     try {
       //  const token = localStorage.getItem("userToken");
 
@@ -116,7 +140,6 @@ export default function ProductDetails() {
           transition: Slide,
         });
         //alert("❌ فشل في إضافة المنتج إلى السلة. الرجاء المحاولة مرة أخرى.");
-
         navigate("/login"); // توجيه المستخدم لصفحة تسجيل الدخول
         return;
       }
@@ -137,6 +160,9 @@ export default function ProductDetails() {
           theme: "light",
           transition: Slide,
         });
+        // تحديث بيانات السلة بعد الإضافة
+        queryClient.invalidateQueries( ["cartItems"]);
+
       }
 
       console.log("Product added to cart:", response.data);
@@ -180,7 +206,7 @@ export default function ProductDetails() {
       }
     }
   };
-
+*/}
   // 🌟 Main UI
   return (
     <ThemeProvider theme={theme}>
