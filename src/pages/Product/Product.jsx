@@ -110,6 +110,20 @@ export default function Product() {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
+  const Products = Array.isArray(productsData)
+  ? productsData
+  : Array.isArray(productsData?.data)
+  ? productsData.data
+  : [];
+console.log("API Products Response:", productsData);
+
+   // =================================================================
+  // **التعديل الأهم لحل مشكلة .slice()**
+  // 1. تعريف المنتجات: نضمن أن القيمة هي مصفوفة فارغة [] إذا كانت البيانات غير موجودة.
+/*   const Products = productsData || [];
+ */  // =================================================================
+
+
   //    console.log("API Response:", data); // تحقق من الاستجابة
   // **2. التعامل مع حالات التحميل والخطأ في بداية المكون**
   if (loading) {
@@ -125,7 +139,6 @@ export default function Product() {
       </Typography>
     );
   }
-  const Products = productsData || []; // استخدام البيانات التي تم جلبها مباشرة
 
   // 🛒 Add to Cart Function
   // 🛒 Add to Cart Function
@@ -214,27 +227,40 @@ export default function Product() {
   };
 
   //  useEffect(() => {getProducts();}, []);
+ // 3. تصحيح استخدام .slice() في دوال التحكم بالـ Slider
+  // نستخدم الآن المتغير "Products" الذي أصبحنا نضمن أنه مصفوفة.
 
-  // استخدام البيانات الفعلية من API
   const handleNext = () => {
+    if (sliderProducts.length === 0) return;
+    setActiveSlide((prev) => (prev + 1) % sliderProducts.length);
+  };
+  // استخدام البيانات الفعلية من API
+ /*  const handleNext = () => {
     // نتحقق من وجود منتجات لتجنب خطأ محتمل
     if (Products.length === 0) return;
     setActiveSlide((prev) => (prev + 1) % Products.slice(0, 5).length);
-  };
-
+  }; */
   const handlePrev = () => {
+    if (sliderProducts.length === 0) return;
+    setActiveSlide(
+      (prev) => (prev - 1 + sliderProducts.length) % sliderProducts.length
+    );
+  };
+/*   const handlePrev = () => {
     if (Products.length === 0) return;
     setActiveSlide(
       (prev) =>
         (prev - 1 + Products.slice(0, 5).length) % Products.slice(0, 5).length
     );
-  };
+  }; */
 
   const handlePageChange = (event, value) => {
     setPage(value);
   };
 
   // 6. تصحيح منطق تقسيم المنتجات والـ Slider
+    const sliderProducts = Products.slice(0, 5); 
+
   const startIndex = (page - 1) * productsPerPage;
   const endIndex = startIndex + productsPerPage;
   const productsToDisplay = Products.slice(startIndex, endIndex); // المنتجات المعروضة في المعرض
@@ -251,7 +277,7 @@ export default function Product() {
           }}
         >
           {/* Slider Items */}
-          {Products.slice(0, 5).map((slide, index) => (
+          {sliderProducts.map((slide, index) => (
             <Box
               key={slide.id}
               sx={{

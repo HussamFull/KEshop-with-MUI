@@ -21,7 +21,9 @@ import Products from "./pages/admin/Products";
 import Users from "./pages/admin/Users";
 import ResetPassword from './pages/auth/ResetPassword';
 import Checkout from './pages/checkout/Checkout';
-import PaymentSuccess from './pages/checkout/PaymentSuccess';
+import Profile from './pages/profile/Profile';
+//import PaymentSuccess from './pages/checkout/PaymentSuccess';
+
 
 
 
@@ -58,10 +60,11 @@ const router = createBrowserRouter([
                 path: "/Checkout",
                 element: <Checkout />,
             },
-            {
-                path: path="/customer/CheckOut/success/:orderId",
+            
+            /*  {
+                path: path="/CheckOut/success/:orderId",
                 element: <PaymentSuccess />,
-            },
+            },  */
 
             
             {
@@ -83,6 +86,10 @@ const router = createBrowserRouter([
              {
                 path: "/product/:id",
                 element: <ProductDetails />,
+            },
+              {
+                path: "/profile",
+                element: <Profile />,
             },
          ] 
         },

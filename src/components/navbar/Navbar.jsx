@@ -23,6 +23,7 @@ import i18next from 'i18next';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useQuery } from '@tanstack/react-query';
 import AxiosUserInstanse from '../../api/AxiosUserInstanse';
+import AxiosProfileInstanse from '../../api/AxiosProfileInstanse';
 
 // ألوان (كما في كودك)
 const colors = {
@@ -57,6 +58,24 @@ export default function Navbar({ IsloggendIn, setIsloggendIn }) {
 
   // نافيجيتور
   const navigate = useNavigate();
+  // -------------------------
+
+  // -------------------------
+  // UserProfile state
+    const fetchProfile = async () => {
+    const response = await AxiosProfileInstanse.get('/Users/Profile');
+    return response;
+  };
+
+  const { data:user } = useQuery({
+    queryKey: ['User'],
+    queryFn: fetchProfile,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  console.log(user);
+  // -------------------------
+
 
   // جلب بيانات السلة (React Query) - Hook لا يجب وضعه داخل شرط
   const fetchProducts = async () => {
@@ -333,12 +352,15 @@ export default function Navbar({ IsloggendIn, setIsloggendIn }) {
                     open={Boolean(anchorElUser)}
                     onClose={handleCloseUserMenu}
                   >
+                    <MenuItem onClick={handleCloseUserMenu} >
+                      <Typography>{t('Welcome')} {user?.data.fullName} </Typography>
+                    </MenuItem>
                     <MenuItem onClick={handleCloseUserMenu} component={Link} to="/Profile">
                       <Typography>{t('Profile')}</Typography>
                     </MenuItem>
-                    <MenuItem onClick={handleCloseUserMenu} component={Link} to="/Account">
+                   {/*  <MenuItem onClick={handleCloseUserMenu} component={Link} to="/Account">
                       <Typography>{t('Account')}</Typography>
-                    </MenuItem>
+                    </MenuItem> */}
                     <MenuItem onClick={handleCloseUserMenu} component={Link} to="/Dashboard">
                       <Typography>{t('Dashboard')}</Typography>
                     </MenuItem>
