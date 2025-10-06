@@ -22,6 +22,8 @@ import Users from "./pages/admin/Users";
 import ResetPassword from './pages/auth/ResetPassword';
 import Checkout from './pages/checkout/Checkout';
 import Profile from './pages/profile/Profile';
+import Info from './pages/profile/Info.jsx';
+import Orders from './pages/profile/Orders';
 //import PaymentSuccess from './pages/checkout/PaymentSuccess';
 
 
@@ -90,7 +92,18 @@ const router = createBrowserRouter([
               {
                 path: "/profile",
                 element: <Profile />,
-            },
+                children: [
+                  {
+                    index: true,
+                    element: <Info />,
+                  },
+                  {
+                    path: "orders",
+                    element: <Orders />,
+                  }
+                ]
+
+            }
          ] 
         },
    
